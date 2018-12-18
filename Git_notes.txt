@@ -6,15 +6,22 @@ Remote Repositories:
 
 -Setting up SSH Credentials (steps):
 
-In terminal:
+#In terminal
 
-cd ~
-ssh-keygen -t rsa -C "<email>"
+Install Git:
+
+$ sudo yum list git
+Installed Packages
+git.x86_64    1.8.3.1-14.el7_5   @RHEL-75-x86_64-updates
+$ sudo yum install git git.x86_64
+
+$ cd ~
+$ ssh-keygen -t rsa -C "<email>"
 Press enter
 Enter Passphrase
-cat  ~/.ssh/<nombre de llave creada>
+$ cat  ~/.ssh/<nombre de llave creada>
 
-In Github web profile:
+#In Github web profile
 
 Go to Profile>SSH and GPG Keys
 Clic in New SSH key
@@ -142,3 +149,5 @@ git fetch origin: allows to sync our local repo with remote repo but will not se
 git merge origin/master: i will make changes from remote repo to your local repository
 git pull origin: i will fetch and merge at once. I will make sync (fetch) and upde our local repo with the new one (merge)
 git push -u origin <different branch>: it will allow to push from a different branch
+git fetch --all: it will get all changes even from different branches
+git fetch --all --prune: it's used when someone deleted a branch. If we use git fetch --all it will not work.
