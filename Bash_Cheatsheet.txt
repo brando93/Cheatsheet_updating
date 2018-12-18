@@ -1,4 +1,4 @@
-t 
+                  BASH - BRANDON RODRIGUEZ
 
 Bash scripting cheatsheet
 Example
@@ -469,5 +469,3 @@ Top cheatsheets
     cheatsheet
     Capybara
     cheatsheet
-
-
