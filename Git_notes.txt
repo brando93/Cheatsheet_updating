@@ -1,0 +1,137 @@
+Remote Repositories
+
+-Setting up SSH Credentials (steps):
+
+In terminal:
+
+cd ~
+ssh-keygen -t rsa -C "<email>"
+Press enter
+Enter Passphrase
+cat  ~/.ssh/<nombre de llave creada>
+
+In Github web profile:
+
+Go to Profile>SSH and GPG Keys
+Clic in New SSH key
+Enter Title and copy out from cat  ~/.ssh/<nombre de llave creada> and paste it
+
+Go to terminal:
+
+mkdir ~/Git_Proyect
+cd ~/Git_Proyect
+git remote set-url origin <SSH URL or HTTPS URL>
+
+
+##################
+Conceptos:
+
+-Tipos de stages:
+
+
+Untracked:
+
+Es el primer status como cuando se crea un archivo, algunos archivos queremos dejarlos en este estado como los temporary files o settings files.
+
+
+Tracked:
+
+Cualquier cambio sera notado por git cuando un archivo esta en este estado.
+
+
+Modified:
+
+Cuando el archivo esta siendo o fue cambiado y eventualmente necesita ser cambiado al siguiente status.
+
+
+Staged:
+
+Cuando se sube el archivo y queremos que sea revisado por los demas. Commits
+
+
+-Fetch: Is the action of getting changes from remote repository to local repository
+
+-Push: Is the action of getting changed from local repository to remote repository
+
+-Origin: default label from remote repository
+
+
+
+_____________________________________________________________________________________
+
+Commands:
+
+git init: verifica que el folder este vacio e inicia git
+git status
+git config user.name:
+git config user.email:
+git config --global user.name: guarda la configuracion para cada sesion de git
+git add "<file name>": cambiar de stage el file
+git add . :cambiar de stage el file
+git commit -m "<name of the commit>":
+git log
+git config core.pager cat
+git config core.pager less
+git log -2
+git log --oneline
+git log --oneline -2
+git log --before="2017-03-02"
+git log --after="2017-03-01"
+git log --since=2 days ago"
+git log --after="one week ago"
+git log --author="Jorge"
+git help log
+git checkout <hash id>
+git checkout master
+git rm <name of file>
+git diff <hash Commits>
+git diff <hash Commits>^
+git diff <hash commit>..<hash commit>
+git --amend
+git config core.editor "atom --wait"
+git commit --amend
+git reset <hash id> --hard : goes back to that commit
+git reset HEAD <file name>
+git checkout -- <file name>
+git reset HEAD --hard
+git reset HEAD^ --hard
+git branch
+git checkout <branch name>
+git merge <master>
+git branch -d <name branch>
+git checkout -b <name of branch to create and switch to>
+git rebase <master> : update current branch with specified
+git rebase -i <master or branch name>: shows all commits are going to be rebase into branch selected. You'll have to choose one option:
+Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but combine into previous commit
+#  f, fixup = like "squash", but discard this commit's log message
+#  x, exec = run command (the rest of the line) using shell
+
+git rebase -i HEAD~<quantity of commits to show>: it will allow you to change, modify or deletes commits in current branch
+
+Taggin:
+
+Es utilizado para por hacer referencias importantes, ejemplo hacer referencia a la version en que se esta trabajando o la que se ha terminado de usar etc...
+
+$ git --version
+git version 1.8.3.1
+$ git tag version-1.8.3.1
+$ git tag
+version-1.8.3.1
+
+git checkout version-1.8.3.1: it will let you got to reposity or look around if you are in detached head state
+
+_________________________________________________
+
+
+Detached HEAD = means we cannot make changes into
+repository however we can look around
+
+.gitignore file= is usefull when you do not want
+git to reconize every specific file such as .swp so
+you add into .gitignore file the following:
+
+*.swp ---> in case you want all .swp files are ignored
