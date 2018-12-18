@@ -2,7 +2,7 @@
 
                     GIT NOTES - BRANDON RODRIGUEZ
 
-Remote Repositories
+Remote Repositories:
 
 -Setting up SSH Credentials (steps):
 

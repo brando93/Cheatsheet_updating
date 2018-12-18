@@ -1,10 +1,7 @@
-*****************
-*               *
-*               *
-*   Commands    *
-*               *
-*               *
-*****************
+
+							LINUX - BRANDON RODRIGUEZ
+
+Commands:
 
 sudo grep -i brandon /home/ibmadmin/.ssh/authorized_keys
 
@@ -392,14 +389,14 @@ lsof -i: used to check which ports are listening
 sudo lsof -i -P -n | grep LISTEN: check all ports in use
 
 
-nmcli con show: what it does shows all internet connnections pc has ever has connection with 
+nmcli con show: what it does shows all internet connnections pc has ever has connection with
 nmcli dev status: list all devices
 nmcli con up <ID>
 nmcli con dow <ID>
 nmcli dev dis <DEV>: brings down a interface and disable autoconnect
 nmcli net off:disable all managed interfaces
 nmcli con add: add new connection
-nmcli con del <ID>: delete a connection	
+nmcli con del <ID>: delete a connection
 
 
 
@@ -473,8 +470,8 @@ Set ssh service in debug mode
 
 How to configure SSH to debug mode? https://access.redhat.com/solutions/295863/ Please use the following instructions from the Resolution section in the above link:
 
-1. Open the `/etc/ssh/sshd_config` file in a text editor # vim /etc/ssh/sshd_config 
-2. Add the following line and save the file LogLevel DEBUG3 
+1. Open the `/etc/ssh/sshd_config` file in a text editor # vim /etc/ssh/sshd_config
+2. Add the following line and save the file LogLevel DEBUG3
 3. Restart SSHD # service sshd restart "
 
 
@@ -488,9 +485,9 @@ Check traffic network throught NIC's
 
 watch -n 1 -d ifconfig <NAME NETWORK INTERFACE>
 
-gather a packet capture on both the source and destination systems: 
+gather a packet capture on both the source and destination systems:
 
-tcpdump -s 114 -i <interface> -w /path/to/file.pcap 
+tcpdump -s 114 -i <interface> -w /path/to/file.pcap
 
 
 
@@ -572,20 +569,20 @@ Per Steven's comment: a second note. If you're not sure if you've done it right 
 _______________________________________________________________________________________________________
 
 # ip route: command is used to see the routing table
- 
+
 [root@vtempddb01 ~]# ip route
-146.89.171.192/28 via 10.177.76.1 dev eth0 
-146.89.131.0/26 via 10.177.76.1 dev eth0 
-146.89.131.64/26 via 10.177.76.1 dev eth0 
-146.89.141.128/25 via 10.177.154.1 dev eth1 
-192.168.117.0/24 dev eth2  proto kernel  scope link  src 192.168.117.26 
-146.89.140.0/24 via 10.177.76.1 dev eth0 
-10.177.154.0/24 dev eth1  proto kernel  scope link  src 10.177.154.26 
-10.177.76.0/24 dev eth0  proto kernel  scope link  src 10.177.76.26 
-169.254.0.0/16 dev eth0  scope link  metric 1002 
-169.254.0.0/16 dev eth1  scope link  metric 1003 
-169.254.0.0/16 dev eth2  scope link  metric 1004 
-default via 192.168.117.1 dev eth2 
+146.89.171.192/28 via 10.177.76.1 dev eth0
+146.89.131.0/26 via 10.177.76.1 dev eth0
+146.89.131.64/26 via 10.177.76.1 dev eth0
+146.89.141.128/25 via 10.177.154.1 dev eth1
+192.168.117.0/24 dev eth2  proto kernel  scope link  src 192.168.117.26
+146.89.140.0/24 via 10.177.76.1 dev eth0
+10.177.154.0/24 dev eth1  proto kernel  scope link  src 10.177.154.26
+10.177.76.0/24 dev eth0  proto kernel  scope link  src 10.177.76.26
+169.254.0.0/16 dev eth0  scope link  metric 1002
+169.254.0.0/16 dev eth1  scope link  metric 1003
+169.254.0.0/16 dev eth2  scope link  metric 1004
+default via 192.168.117.1 dev eth2
 
 _____________________________________________________________________________________________________
 
@@ -929,7 +926,7 @@ In this example, SELinux provides a user (unconfined_u), a role (object_r), a ty
 
 
 Red Hat
-	
+
 /etc/init.d/resamad stop
 /etc/init.d/resamad start
 
@@ -961,13 +958,13 @@ Iptables es un back-end/netfilter o un firewall interno del kernel de linux.
 
 
 Los tres pasos para una conneccion es son:
- 
+
 	1) NEW: crear la connecion
 	2) ESTABLISHED: establecer la connecion
 	3) RELATED: mantener la connecion
 
 Las tres reglas de configuracion en iptables son:
-	
+
 	1) OUTPUT: conneciones de salida
 	2) INPUT:  conneciones de entrada
 	3) FORWARD: connecciones de reenvio
@@ -1222,12 +1219,12 @@ egrep " ro,|,ro " /proc/mounts
 
 Si el filesystem esta en read only:
 
-egrep " ro,|,ro " /proc/mounts 
+egrep " ro,|,ro " /proc/mounts
 
 Ejemplo:
 
-#brodriguez$RHEL: egrep " ro,|,ro " /proc/mounts 
-/dev/sda3 / ext4 ro,seclabel,relatime,barrier=1,data=ordered 0 0    
+#brodriguez$RHEL: egrep " ro,|,ro " /proc/mounts
+/dev/sda3 / ext4 ro,seclabel,relatime,barrier=1,data=ordered 0 0
 /dev/sda5 /var ext4 ro,seclabel,relatime,barrier=1,data=ordered 0 0
 ------------------------------------------------------------------------------------------------------
 
@@ -1240,7 +1237,7 @@ grep "Failed password" /var/log/auth.log
 
 ------------------------------------------------------------------------------------------------------
 
-		CHECKING HEARTHBEAT 
+		CHECKING HEARTHBEAT
 
 [ibmadmin@jp0811fgl3008 ~]$ sudo cat /opt/IBM/ITM/config/ul.ini |grep -i CTIRA_HEARTBEAT
 
@@ -1375,7 +1372,7 @@ Stopping sshd:                                             [  OK  ]
 Starting sshd:                                             [  OK  ]
 [osadmin@catr11z2p2060 ~]$ sudo grep -i permitroot /etc/ssh/sshd_config
 PermitRootLogin without-password
-[osadmin@catr11z2p2060 ~]$ 
+[osadmin@catr11z2p2060 ~]$
 
 
 __________________________________________________________________________________________________
@@ -1750,7 +1747,7 @@ va acompanada de un 0, en caso de ser erronea, un 1.
 Para ese caso de ejemplo, el error esta en F1
 
 Este seria el detalle completo:
-```### CODE EXPLANATIONS ### 
+```### CODE EXPLANATIONS ###
 # 1 - means - found error in one group's checking
 # 0 - means - It is OK in one groups's checking
 #
@@ -1997,7 +1994,7 @@ En incidente verificar:
 	attachments : OPS - TASKS
 	INCIDENT in progress
 	revisar summary and performers y validar disponibilidad
-	 
+
 
 1) CEMPreck
 2) Multiserver - OSVALIDATION | tee <filename
@@ -2007,7 +2004,7 @@ Practica:
 
 #validar repositorios#
 
-correr CEMPrecheck 
+correr CEMPrecheck
 o
 sudo /sds/local/sceplus/sup/Linux/patching/cms_linux_pkg_mgr.sh update
 
@@ -2030,7 +2027,7 @@ chkconfig NetworkManager off
 
 
 #comentar nfs
-sudo cat /etc/fstab 
+sudo cat /etc/fstab
 
 
 sudo systemctl winbind status
@@ -2049,11 +2046,11 @@ sudo /etc/init.d/vncserver status
 
 sudo /opt/IBM/ITM/bin/itmcmd agent start all
 sudo /opt/IBM/ITM/bin/itmcmd agent stop all
-sudo /opt/IBM/ITM/bin/cinfo -r 
+sudo /opt/IBM/ITM/bin/cinfo -r
 sudo /opt/IBM/ITM/bin/itmcmd agent start -oy sa -O GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent start -oy sa -o GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent -o GRD start sa
-sudo /opt/IBM/ITM/bin/cinfo -r 
+sudo /opt/IBM/ITM/bin/cinfo -r
 
 
 descomentar /etc/fstab
@@ -2085,7 +2082,7 @@ cat CH1365068_Z3H.csv | grep -i LCMSQGMD002 | cut -d, -f 3 | awk '{ print "sudo 
 cat CH1365068_Z3H.csv | grep -i LCMSQGMD002 | cut -d, -f 3 | awk '{ print "sudo yum -y update --enablerepo=* --disablerepo=gold --advisory=" "\""$1"\""}
 
 
-primero se hace pre check 
+primero se hace pre check
 
 
 sudo yum repolist all --enablerepo=* --disablerepo=gold;
@@ -2102,7 +2099,7 @@ or
 sudo /usr/bin/systemctl start NetworkManager.service
 
 Ensure that the Network Manager service is disabled
-sudo chkconfig NetworkManager off 
+sudo chkconfig NetworkManager off
 systemctl disable NetworkManager.service
 or
 sudo /usr/bin/systemctl enable NetworkManager.service
@@ -2131,11 +2128,11 @@ sudo /etc/init.d/dsmcad_DAY status
 sudo /etc/init.d/vncserver status
 
 sudo /opt/IBM/ITM/bin/itmcmd agent start all
-sudo /opt/IBM/ITM/bin/cinfo -r 
+sudo /opt/IBM/ITM/bin/cinfo -r
 sudo /opt/IBM/ITM/bin/itmcmd agent start cat-oy sa -O GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent start -oy sa -o GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent -o GRD start sa
-sudo /opt/IBM/ITM/bin/cinfo -r 
+sudo /opt/IBM/ITM/bin/cinfo -r
 
 sudo cat /var/log/yum.log | grep 'Nov 24'
 
@@ -2199,7 +2196,7 @@ BUILDPLAN:
 2. OS engineer task :
 a. OS engineer to take snapshot of server
 b. OS engineer to check and note the current timezone on the server before the patching by using the date command
-c. Pre-requisite steps : 
+c. Pre-requisite steps :
 
 -If PHANA and VHANA servers listed, please contact Infra Team Squad members ahead of change.
 -For applying RedHat Satellite subscriptions to non-Hana RHEL 6.x VMs only if new packages are not found on this customer VMs:
@@ -2214,7 +2211,7 @@ NOTE1: If server is HANA DB and OS version is 6.7 DO NOT TAKE patching action.
 NOTE2: If server is a vhana and requires snapshot or a phana requires a reboot, please contact Infra Team squad, as their team only has access at ESXI level(vhanas) and consol access (phanas) if servers are not coming up.
 
 3. OS team reboots the servers
-4. OS engineer to check the timezone on the server after the patching using the date command and, if needed, set it back to the timezone noted at point 2b 
+4. OS engineer to check the timezone on the server after the patching using the date command and, if needed, set it back to the timezone noted at point 2b
 5. SAP engineer to start all applications and DB running on the server as per Stop/Start procedure/doc
 
 
@@ -2223,7 +2220,7 @@ NOTE2: If server is a vhana and requires snapshot or a phana requires a reboot, 
 
 Hana upgrade from 6.5 to 6.7
 0 people like this
- 
+
 Like
 |Updated Feb 27 by Sagar Pandita|Tags: None Add tags
 Edit
@@ -2231,7 +2228,7 @@ Page Actions
 
 ****Please check the time zone first , looks after the reboot the time zone is being changed ****
 
- 
+
 ls -lha /etc/localtime
 date
 
@@ -2246,25 +2243,25 @@ Sat Sep  1 18:52:43 AST 2018
 
  date
 
- 
+
 
 1. Disable zabbix from console
 
- 
+
 
 2. Take a VM snapshot (deselect memory snapshot)
 
- 
+
 
 3. Copy the iso from local Chef server to VM in /tmp folder
     scp /root/rhel-server-6.7-x86_64-dvd.iso x.x.x.x:/tmp
 
- 
+
 
 4. Login to VM and stop chef-client so it will not overwrite the yum settings during upgrade
     /etc/init.d/chef-client stop
 
- 
+
 
 5. Go to /etc/yum.repos.d/ and disable existing repos aod.repo, gold.repo and mercury.repo (edit and change to enabled=0)
 
@@ -2275,45 +2272,45 @@ Sat Sep  1 18:52:43 AST 2018
    If RH Satellite is applied, disable the subscriptions:
     subscription-manager repos --disable rhel-*
 
- 
+
 
 6. Mount the image
     mkdir /mnt/redhat
     mount -o loop /tmp/rhel-server-6.7-x86_64-dvd.iso /mnt/redhat
     cp /mnt/redhat/media.repo /etc/yum.repos.d/
 
- 
+
 
 7. Modify the new repo (/etc/yum.repos.d/media.repo). Add the following lines at the end
     baseurl=file:///mnt/redhat/Server
     gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
     enabled=1
 
- 
+
 
 8. Clean and verify. Check if you see only InstallMedia and not Aod / Gold / Mercury or RH subscriptions (otherwise it will upgrade to 6.9 !)
     yum clean all
     yum repolist
     yum list
 
- 
+
 
 9. Update, check and confirm
     yum update
 
- 
+
 
 10. Modify vmxnet, othewise network interfaces might not come back
     vi /etc/modprobe.d/vmxnet3.conf (comment the line #options vmxnet3 disable_lro=1)
 
- 
+
 
 11. Finish and reboot
     umount /mnt/redhat
     rm -f /tmp/rhel-server-6.7-x86_64-dvd.iso
     reboot
 
- 
+
 
 12. Re-login and verify version:
     uname -a; cat /etc/redhat-release
@@ -2322,12 +2319,12 @@ Sat Sep  1 18:52:43 AST 2018
     2.6.32-573.el6.x86_64 #1 SMP Wed Jul 1 18:23:37 EDT 2015 x86_64 x86_64 x86_64 GNU/Linux
     Red Hat Enterprise Linux Server release 6.7 (Santiago)
 
- 
+
 
 13. Run chef-client to re-configure yum repos
     chef-client
 
- 
+
 
 14. Reinstall vmware-tools as we have a new kernel AND double check for the correct version - 9.4.0.25793 (build-1280544). If you see a different version, please go to Vmware upgrade procedure and reinstall
 
@@ -2339,15 +2336,15 @@ Sat Sep  1 18:52:43 AST 2018
 
     vmware-toolbox-cmd -v
 
- 
+
 
 15. Re-enable zabbix from console
 
- 
+
 
 16. Delete VM snapshot
 
- 
+
 
 17. (optional - needs confirmation) Update of compat-sap rpm. From local Chef server
 
@@ -2367,13 +2364,13 @@ VMWARE TOOLS
 
 VMware tools manual upgrade, downgrade, uninstall (Linux CLI)
 0 people like this
- 
+
 Like
 |Updated December 7, 2016 by Cristian Calin|Tags: None Add tags
 Edit
 Page Actions
 
- 
+
 
 Vmware tools version can be checked by running:
 
@@ -2384,14 +2381,14 @@ or
 
 vmware-toolbox-cmd -v
 
- 
+
 
 Vmware tools can be uninstalled with the command:
 
 
 vmware-uninstall-tools.pl
 
- 
+
 
 To manually install Vmware tools, copy (scp from chef servers, root folder) the iso image into /tmp folder and follow the guideline:
 
@@ -2411,11 +2408,11 @@ tar -xzvf VMwareTools-9.4.0-1280544.tar.gz
 cd vmware-tools-distrib/
 ./vmware-install.pl --default
 
- 
+
 
 Version 10.0.9-3917699 is used on normal VMs (non Hana) running on vCenters
 
- 
+
 
 mkdir /mnt/vmware-tools
 mount -o loop /tmp/VMware-tools-linux-10.0.9-3917699.iso /mnt/vmware-tools/
@@ -2425,14 +2422,14 @@ tar -xzvf VMwareTools-10.0.9-3917699.tar.gz
 cd vmware-tools-distrib/
 ./vmware-install.pl --default
 
- 
+
 
 Check the service is running:
 
 
 /etc/vmware-tools/services.sh status
 
- 
+
 
 Do a clean-up:
 
@@ -2446,11 +2443,11 @@ or:
 
 rm -f /tmp/VMwareTools-10.0.9-3917699.tar.gz /tmp/VMware-tools-linux-10.0.9-3917699.iso
 
- 
+
 
 Sometimes, Vmware tools needs to be reinstalled (like a kernel upgrade or when the auto-update is not working for some reason), you can manually do this by running:
 
- 
+
 
 vmware-config-tools.pl --default
 
@@ -2462,7 +2459,7 @@ REDHAT CHANGE
 
 OS Upgrade Procedure (Linux)
 0 people like this
- 
+
 Like
 |Updated Jun 11 by Jonathan Villalobos Arias|Tags: None Add tags
 Edit
@@ -2470,19 +2467,19 @@ Page Actions
 
 OS Upgrade Procedure.
 
- 
+
 
 Prerequisite:
 
- 
+
 
 Before doing OS upgrade it would be better to have some files back which can be used while doing troubleshooting when system is not coming back after applying upgrade.
 
- 
+
 
 Do a copy/paste of the following lines so we can have a full history file with different command results:
 
- 
+
 
 echo `date`;
 echo -e "\n\nuname -a results\n";
@@ -2518,99 +2515,99 @@ lrwxrwxrwx 1 root root 31 Jan 10  2017 /etc/localtime -> /usr/share/zoneinfo/Asi
 Sat Sep  1 17:13:59 AST 2018
 [ibmbfernandez@BI1BWHAPDEV01 ~]$ hostname
 BI1BWHAPDEV01
-[ibmbfernandez@BI1BWHAPDEV01 ~]$ 
+[ibmbfernandez@BI1BWHAPDEV01 ~]$
 
 Clear Yum Cache:
 
- 
+
 
 yum clean all
 
- 
+
 
 Getting updates
 
- 
+
 
 yum check-update
 
- 
+
 
 Update the packages
 
- 
+
 
 yum update
 
- 
+
 
 Reboot server
 
- 
+
 
 shutdown -r now
 
- 
+
 
 Check red hat release and version after update:
 
- 
+
 
 cat /etc/redhat-release ; uname -a
 
- 
+
 
 In case of kernel upgrade, Vmware tools needs to be reinstalled by running (otherwise it will not start up with the VM):
 
- 
+
 
 vmware-config-tools.pl --default
 
- 
+
 
 PLEASE BE SURE TO CHECK TIMEZONE IS THE SAME AS BEFORE THE PATCH!!!!
 
- 
+
 
 PLEASE VALIDATE WITH SAP TEAM ALL MOUNTS AFTER REBOOTS
 
- 
 
- 
+
+
 
 Rollback Plan:
 
- 
+
 
 In case, if we need to revert back do this:
 
- 
+
 
 Check yum history using “yum history”
 
- 
+
 
 ID | Login user | Date and time | Action(s) | Altered
 
 This will give you such output, where you can determine ID, which has been applied as latest.
 
- 
+
 
 yum history undo <ID>
 
- 
+
 
 if you know there was a kernel upgrade ( for example from 6.7 to 6.9 )  a reboot is required!
 
- 
+
 
 Check red hat release and version after downgrade:
 
- 
+
 
 cat /etc/redhat-release ; uname -a
 
- 
+
 ###########################################################################################
 
 
@@ -2632,19 +2629,3 @@ agentsITM
 
 
 ############################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,5 @@
-AIX
 
+							AIX - BRANDON RODRIGUEZ
 
 Important Conceps:
 
@@ -8,7 +8,7 @@ IVM: Integrated Virtualization Manager
 HMC: Hardware Management Console = it's a layer between hardware and OS, it's into the Firmware.
 SDMC: System Directoy Management Console
 LPAR: Logical Partition = bunch of physical resources made into one virtual machine called LPAR.
-VIO Client: when the LPAR is all virutal devices 
+VIO Client: when the LPAR is all virutal devices
 LUN: Logical Unit Numbers
 VSCSI: Virtual SCSI storage
 SEA: Shared Ethernet Adapter
@@ -17,7 +17,7 @@ NAS: Network Attached Storage = pretty much bunch of storage connected amoung th
 SAN: Storage Area Network = pretty much bunch of storage connected between them with SAN Switches, redundancy, expensive, mostly for big companies.
 
 
-
+Commands:
 
 $ oslevel -s
 6100-09-06-1543
@@ -94,7 +94,7 @@ procmon: The procmon tool enables you to view and manage the processes running o
 sar - 1 5: performance average
 svmon: give memory output
 ps: process
-vmstat 1 5: displays cpu informartion 
+vmstat 1 5: displays cpu informartion
 iostat:
 lvmstat:
 filemon:
@@ -108,31 +108,31 @@ rmfs /data2: remove fs
 lsps -a 	To list out all paging spaces
 smitty tcpip: configure tcp/ip
 
-	
+
 lsps hd6 	To display the details of the paging space hd6
 
-	
+
 chps -a y paging00 	To turn on the paging space paging00 on next reboot
 
-	
+
 chps -a n paging00 	To turn off the paging space paging00 on next reboot
 
-	
+
 chps -s4 paging00 	To increase the size of the paging space in 4 LP blocks
 
-	
+
 mkps -a -n -s4 newvg 	To create a paging space on VG newvg of 4 LP size (-s4) and activate it immediately (-n) and activate it at every restarts
 
-	
+
 rmps paging00 	To remove the paging space paging00
 
-	
+
 swapon -a 	To invoke all entries in /etc/swapspaces file
 
-	
+
 swapon /dev/paging00 	To make available swap space paging00
 
-	
+
 swapoff /dev/paging00 	To disable swap space paging00
 
 df -g: check space in gigabytes
@@ -160,9 +160,9 @@ ________________________________________________________________________________
 CAMBIAR SETTINGS DE USERS
 
 
-sudo chsec -f /etc/security/lastlog -a unsuccessful_login_count=0 -s <userid>: 
+sudo chsec -f /etc/security/lastlog -a unsuccessful_login_count=0 -s <userid>:
 
-cambia la cantidad de unseccesful logins a 0 del user especificado 
+cambia la cantidad de unseccesful logins a 0 del user especificado
 *********************************************************************************
 
 reducevg -d <sapvg> <hdisk2> ----> ( -d ) es Deallocates the existing logical volume partitions and then deletes resultant empty logical
@@ -540,24 +540,24 @@ raw = datos extraidos del nmon sin pasarlos a un excel con grafos.
 5) se pasa al nmon_analizer en la maquina de windows ()
 
 
- 
+
 ############ Script que guarda performance en  raw data #############################
 
-[ehnrcsimuatdbp:root:/var:] cat /usr/local/bin/nmon.ksh 
+[ehnrcsimuatdbp:root:/var:] cat /usr/local/bin/nmon.ksh
 #!/bin/ksh
 #
-# 
-# 
+#
+#
 # Title:       nmon.ksh
 # Owner:       root
 # Permissions: 755
-# 
+#
 #
 # Simple script to capture nmon data for use with nmon
 # The script generates a new file each time with the
 # name "server.output.date.nmon" $FILE_DIR
 # Calculations:  ( Using 24 Hours as Example )
-# -s = Seconds ( 300 / 60 = 5 Minutes )      
+# -s = Seconds ( 300 / 60 = 5 Minutes )
 # -c = Cycles ( [288 * 5] / 60 = 24 Hours )
 #
 ################################################################
@@ -584,7 +584,7 @@ else
   echo "$DATE1 $TIME nmon.ksh can not find a valid NMON binary - Exiting" >> $SYSLOG
   exit 1
 fi
-   
+
 ################################################################
 # Execute the nmon command and save the output                 #
 ################################################################
@@ -892,26 +892,10 @@ Y les va a pedir el nuevo password.  Favor utilizar alguno de los que acaba de p
 /etc/netsvc.conf: name resolution order
 /usr/sample/tcpip/named.* : sample files that can be copied and edited
 /etc/named.* : DNS resolution files
-/etc/hosts.equiv: remote user access files 
+/etc/hosts.equiv: remote user access files
 /etc/rhosts:remote user access files
 /etc/hosts.lpd :remote user access files
 /var/adm/ras/errlog: check system logs
-/var/adm/ras: log files 
+/var/adm/ras: log files
 /sbin/rc.boot: boot scripts
 /etc/inittab: boot scripts
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
