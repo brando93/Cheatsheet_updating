@@ -128,6 +128,9 @@ version-1.8.3.1
 
 git checkout version-1.8.3.1: it will let you got to reposity or look around if you are in detached head state
 
+git push origin master: allows to send our local repo changes to the remote repo
+git fetch origin: allows to sync our local repo with remote repo but will not see changes reflected locally
+git merge origin master: i will make changes from remote repo to your local repository 
 _________________________________________________
 
 
