@@ -132,6 +132,97 @@ $$$$$$$$$$$$$OTHER WAY TO CHANGE TIMEZONE$$$$$$$$$$$$$$$$
 # rm -rm /etc/localtime
 # Create a symbolic link from your chosen time zone file to the /etc/lcoaltime. For instance, you can type <ln -s /usr/share/zoneinfo/US/Easter localtime> to set up the time in the US Easter time.
 
+_______________________________________________________________________________________________________________________________
+
+
+
+
+                                 Linux Duplicate Packages/Recovery Process
+
+
+
+
+1. Take Snapshot of the VM which has duplicate packages
+
+
+2.Execute the below command
+
+#yum check &> /tmp/yumcheck.out
+
+The above command will take more then 45 minutes  to 1 Hour depends on number of packages installed on server and this will increase the CPU load 99% .
+
+
+The progress can be monitored through the blow command
+
+
+#tailf /tmp/yumcheck.out
+
+
+3.Once Yum check completed .Execute the below command.
+
+#grep duplicate /tmp/yumcheck.out | awk '{ print $NF }' | sort > /tmp/dups.txt
+
+
+4.Open the /tmp/dups.txt
+
+#vi /tmp/dups.txt
+
+remove the numbers before the package name and save the file
+
+5.Prepare the final list
+
+#cat /tmp/dups.txt | sort > /tmp/removethese.txt
+
+
+6.Check number of Packages
+
+#wc -l /tmp/removethese.txt
+
+
+7.Remove the duplicate packages
+
+for i in  `cat /tmp/removethese.txt`; do  rpm -e $i --nodeps; done
+
+8. if any packages has conflicts that can be re installed
+
+
+# yum reinstall packagename
+
+if re install didn't work try
+
+#yum update package name
+
+if update fails remove with no deps and install it back
+
+#rpm -e packagaename –nopdeps
+
+#yum install packagename
+
+9.if required re create a inird images if you are re installing the Kernel packages .
+
+10.Again Execute yum check
+
+#yum check &> /tmp/yumfinal.out
+
+
+The above command will take more then 45 minutes  to 1 Hour depends on number of packages installed on server and this will increase the CPU load 99% .
+
+11.Once all duplicate and Conflict packages are cleaned reboot the server .
+
+
+#reboot
+
+12.Do the yum update to make sure future update works
+
+#yum update
+
+
+13. App/DB Validation .
+
+
+
+
+
 
 
 

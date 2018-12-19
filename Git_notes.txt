@@ -31,7 +31,7 @@ Go to terminal:
 
 mkdir ~/Git_Proyect
 cd ~/Git_Proyect
-git remote set-url origin <SSH URL or HTTPS URL>
+git clone <SSH URL or HTTPS URL> (depends on the configuration made, in this case select ssh)
 
 
 ##################
@@ -70,7 +70,7 @@ you add into .gitignore file the following as example:
 
 -Fetch: Is the action of getting changes from remote repository to local repository
 
--Push: Is the action of getting changed from local repository to remote repository
+-Push: Is the action of make changes from local repository to remote repository
 
 -Origin: default label from remote repository
 
