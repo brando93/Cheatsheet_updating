@@ -2606,6 +2606,42 @@ Check red hat release and version after downgrade:
 
 
 cat /etc/redhat-release ; uname -a
+###########################################################################################
+
+VMWARE Tool Upgrade :
+Check by running below command on VM :
+vmware-toolbox-cmd -v
+section A )  If the version of vmware tools is 8.3.7-x.x follow below steps :
+           rpm -e vmware-open-vm-tools-kmod vmware-open-vm-tools-xorg-drv-display vmware-tools-nox vmware-open-vm-tools-common vmware-open-vm-tools vmware-open-vm-tools-xorg-drv-mouse vmware-open-vm-tools-nox vmware-tools-common vmware-open-vm-tools-xorg-utilities --nodeps
+( Steps to upgrade vmware tools to 10.1.10  ) :
+1)  mount 146.89.141.138:/sds /sds -o nfsvers=3 ( mkdir /sds if not available )
+2 )Check the files present under cd /sds/VMware/ , it should have tar.gz file , copy & untar that file under /tmp
+                 cp /sds/VMware/VMwareTools-10.1.10-6082533.tar.gz /tmp
+                 cd /tmp; gunzip VMwareTools-10.1.10-6082533.tar.gz
+                 tar -xvf  VMwareTools-10.1.10-6082533.tar
+                 cd /tmp/vmware-tools-distrib
+                 ./vmware-install.pl -d
+3 )  Verify Vmware tools are up-to-date
+    vmware-toolbox-cmd upgrade status
+    vmware-toolbox-cmd -v
+    ps -ef |egrep vmtools  ( Check whether vmtools are up & running )
+section B ) Below Steps are required for  Linux VM to load Vmware tools if it finds new Kernel ( Mandatory Steps )
+1) Copy the CMSD-IBM-GPG-KEY   &
+VmWareTool-Postpatch-1.1-1.el5.noarch.rpm  ( for RHEL 5 )
+VmWareTool-Postpatch-1.1.1.el6.noarch.rpm ( For RHEL 6 )
+VmWareTool-Postpatch-1.1.1.el7.noarch.rpm ( For RHEL 7 )
+files under /tmp on to the linux VM
+2) Import  the key :
+        rpm --import CMSD-IBM-GPG-KEY
+   Install the RPM :
+        rpm -ivh VmWareTool-Postpatch-1.1-1.elX.noarch.rpm
+3) Make this service avaialable at boot time :
+       chkconfig vmware-kernel on (RHEL 5 & 6)
+       systemctl enable vmware-kernel (RHEL 7)
+4) Verify Key VmwareTools-Postpatch is installed
+         rpm -qa |egrep "gpg-pubkey-047e93f5-558966df|VmWareTool-Postpatch"
+
+
 
 
 ###########################################################################################
