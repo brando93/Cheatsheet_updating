@@ -1297,6 +1297,27 @@ ps axo pid, comm,nice --sort=-nice
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+								PAM UNABLE TO DLOPEN
+
+Dec 20 17:50:18 lcmspsag001 sudo: PAM unable to dlopen(/usr/lib64/security/pam_ldap.so): /usr/lib64/security/pam_ldap.so: cannot open shared object file: No such file or directory
+Dec 20 17:50:18 lcmspsag001 sudo: PAM adding faulty module: /usr/lib64/security/pam_ldap.so
+
+
+scp de lcmspsag002 a lcmspsag001
+> /usr/lib64/security/pam_ldap.so
+en lcmspsag001 vi /etc/pam.d/password-auth cambie
+> auth        required     /lib/security/$ISA/pam_listfile.so item=user sense=deny file=/etc/security/$FILENAME onerr=succeed
+por
+> auth        required      /lib64/security/$ISA/pam_listfile.so item=user sense=deny file=/etc/security/$FILENAME onerr=succeed
+porque la ruta no existia :slightly_smiling_face:
+el sistema es de 64bits no 32 jajaja
+
+y ya con eso
+
+
+
+
+____----------------------------------------------------------------------------------------------------------
 
 !!!!!!!!!!!!!!!!!!!!!VALIDAR VM Y SI ESTA EN READ ONLY = RO!!!!!!!!!!!!!!!!!!!!!
 
@@ -1323,6 +1344,13 @@ CHECKING FAILURE SSH ATTEMPS
 
 sudo pam_tally2 --user=cinstall
 
+RESET / UNLOCK ACCOUNT WITH pam_tally2
+
+pam_tally2 --user=cinstall --reset
+
+pam_tally2 -r -u cinstall
+
+CHECK IN LOGS
 
 grep "Failed password" /var/log/auth.log
 
@@ -1713,6 +1741,11 @@ sudo systemctl status ntpd
 sudo systemctl start ntpd
 
 sudo systemctl enable ntpd
+___________________________________________________________________________________________________
+
+NTPD - RHEL5
+
+sudo /etc/init.d/ntpd status
 
 ___________________________________________________________________________________________________
 
@@ -1956,6 +1989,8 @@ sudo chage -W 7 <USER>
 sudo chage -d 0 <USER>
 
 chage -I -1 -m 0 -M 99999 -E -1 username
+
+sudo pam_tally2 --reset --user cinstall
 
 sudo vim /opt/eregldap/uar/configure/protectedid.dat
 ______________________________________________________________________________________
