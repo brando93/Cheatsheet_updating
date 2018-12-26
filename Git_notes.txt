@@ -39,11 +39,12 @@ Conceptos:
 
 -Tipos de stages:
 
+**File Status Life Cycle**
 
 Untracked:
 
-Es el primer status como cuando se crea un archivo, algunos archivos queremos dejarlos en este estado como los temporary files o settings files.
-
+Es el primer status cuando se crea un archivo en nuestra carpeta git, en este file Status git no captara ningun cambio que se haga a este
+Algunas archivos queremos dejarlos como untracked ejemplos son: settings files, tmp files.
 
 Tracked:
 
@@ -52,13 +53,11 @@ Cualquier cambio sera notado por git cuando un archivo esta en este estado.
 
 Modified:
 
-Cuando el archivo esta siendo o fue cambiado y eventualmente necesita ser cambiado al siguiente status.
-
+Cuando un archivo es modificado, git entiende que este archivo debe ser movido a la siguiente fase dado que fue modificado
 
 Staged:
 
-Cuando se sube el archivo y queremos que sea revisado por los demas. Commits
-
+En este se encuentran los commits. Cuando se sube el archivo y queremos que sea revisado por los demas.
 
 Detached HEAD = means we cannot make changes into
 repository however we can look around
@@ -81,24 +80,24 @@ ________________________________________________________________________________
 Commands:
 
 git init: verifica que el folder este vacio e inicia git
-git status
-git config user.name:
-git config user.email:
+git status: shows current stage of files
+git config user.name: configure your user settings
+git config user.email:configure your email settings
 git config --global user.name: guarda la configuracion para cada sesion de git
-git add "<file name>": cambiar de stage el file
+git add "<file name>": cambiar de stage el file de untracked - tracked - modified
 git add . :cambiar de stage el file
-git commit -m "<name of the commit>":
-git log
+git commit -m "<name of the commit>": toma un snapshot de los cambios hecos, agrega los cambios hechos
+git log: shows all logs
 git config core.pager cat
 git config core.pager less
 git log -2
 git log --oneline
 git log --oneline -2
-git log --before="2017-03-02"
-git log --after="2017-03-01"
-git log --since=2 days ago"
-git log --after="one week ago"
-git log --author="Jorge"
+git log --before="2017-03-02": shows logs from to specific time
+git log --after="2017-03-01": shows logs from to specific time
+git log --since=2 days ago": shows logs from to specific time
+git log --after="one week ago": shows logs fcd rom to specific time
+git log --author="Jorge": shows logs made by Jorge
 git help log
 git checkout <hash id>
 git checkout master

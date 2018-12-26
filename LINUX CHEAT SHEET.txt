@@ -957,7 +957,8 @@ at: You may simply want to run a single command at a specific point in the futur
 
 Creating a Swap File:
 To add a swap file:
-1. Determine the size of the new swap file in megabytes and multiply by 1024 to determine the number of blocks. For example, the block size of a 64 mb swap file is 65536.
+1. Determine the size of the new swap file in megabytes and multiply by 1024 to determine the number of blocks.
+For example, the block size of a 64 mb swap file is 65536.
 2. At a shell prompt as root, type the following command with count being equal to the desired block size:
 a. dd if=/dev/zero of=swapfile bs=1024 count=65536
 3. Set up the swap file with the command:
@@ -1506,7 +1507,6 @@ sudo /opt/IBM/ITM/bin/cinfo -r
 sudo /opt/IBM/ITM/bin/itmcmd agent -f stop ul
 sudo /opt/IBM/ITM/bin/itmcmd agent stop all
 sudo /opt/IBM/ITM/bin/itmcmd agent start all
-
 sudo service crond status
 
 sudo service crond start
