@@ -1710,6 +1710,45 @@ valsapgp101  ux    10289224  root   Feb16     None  ...running
 valsapgp101  sa    19136594  root   Feb21     GP1   ...running
 valsapgp101  rz    38207538  root   19:35:27  GP1   ...running
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+#ITM Agent Offline: db2inst1:qg1_bldgdp-sanddb01:UD
+
+Se busca el nombre de la instancia:
+
+$ ps -ef|grep db2sysc
+db2admin 25588 25362  0 15:27 pts/0    00:00:00 grep db2sysc
+db2inst1 28823 28821 10  2018 ?        6-04:06:02 db2sysc 0
+
+Despues con el nombre del agente offline y la instancia procedemos a iniciar el agente:
+
+$ sudo /opt/IBM/ITM/bin/itmcmd agent -o db2inst1 start ud
+itmcmd agent        : Sourcing db2profile for user db2inst1
+Processing. Please wait...
+Starting IBM Tivoli Composite Application Manager Agent for DB2 ...
+IBM Tivoli Composite Application Manager Agent for DB2 started
+
+$ sudo /opt/IBM/ITM/bin/cinfo -r
+
+*********** Wed Jan  2 15:30:15 UTC 2019 ******************
+User: root Groups: root
+Host name : bldgdp-sanddb01  Installer Lvl:06.30.07.00
+CandleHome: /opt/IBM/ITM
+***********************************************************
+Host             Prod  PID    Owner  Start  ID                        ..Status
+bldgdp-sanddb01  ul    23258  root   2018   None                      ...running
+bldgdp-sanddb01  lz    13423  root   15:08  None                      ...running
+bldgdp-sanddb01  ud    26620  root   15:29  bldgdp-sanddb01_db2inst1  ...running
+[osadmin@bldgdp-sanddb01 ~]$
+
+
+
+
+
+
+
+
 __________________________________________________________________________________________________
 
 BESClient
