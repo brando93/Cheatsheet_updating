@@ -609,7 +609,131 @@ exit 0
 
 
 
+Stand alone AIX VM OS patching steps:---
+*****************************************
 
+To save change logs run below command in terminal:
+
+#script -a hostname_log.txt
+then
+#ssh ibmadmin@ip
+
+step 1)  Run precheck script :--
+#sudo mount -o soft 146.89.141.138:/sds /sds
+#sudo /sds/local/sceplus/sup/UNIX/bin/aix_snapshot.ksh pre
+
+note:--check #sudo errpt|more       ---- it shouldn't have any permanent hardware errors
+note 2:--Run #lsvg rootvg    --- atleast 8 free pp should be present
+note 3:--first confirm VM is not belongs to cluster (HACMP or GPFS),If it is cluster then we need to bring down cluster services then need to follow below steps
+
+#sudo lssrc -g cluster
+#sudo lslpp -l gpfs.base
+
+
+step 2) Inform Apps/DB team to bring down apps/db ,once Apps/db brought down then need to follow below steps
+
+#ps -ef|grep -v root     --to confirm whether apps/db process are stopped or not
+
+step 3) OS patching
+
+ a)  Run screen command
+    #screen -R username
+
+b)
+#sudo /sds/local/sceplus/sup/AIX/bin/update_q0418.ksh
+
+
+step 4)After OS update will get below screen
+
+Example :
+=====================================================================================
+Updates successful - A reboot is required                 *
+*                                                                *
+*  After the system reboots the update will be complete          *
+*                                                                *
+*  Review the summary log:                                       *
+*     /tmp/jp0811z8p1008.Q118.post_check.log
+*                                                                *
+*  Review the detailed log:                                      *
+*     /tmp/update_Q118.jp0811z8p1008.log
+
+==================================================================================
+
+>>>then need to cat "Review the summary log: "then all things should be "Successful"
+#sudo cat logname
+Example output:--
+
+$ sudo cat /tmp/jp0811z8p1008.Q118.post_check.log
+Patching Postcheck log for jp0811z8p1008
+jp0811z8p1008 patched on 02-05-18 at 23:06
+ #
+*****             IBM INTERNAL USE ONLY             *****
+ #
+Checking O/S Level
+O/Level reports 7100-04-05-1720 - Patching Successful
+No issues reported by lppchk - Successful
+Required iFixes installed - Patching Successful
+OpenSSH reports 7.5.102.1100 - Patching Successful
+OpenSSL reports 1.0.2.1300 - Patching Successful
+Sudo reports 1.8.20.2 - Patching Successful
+Bash reports 4.3.30 - Patching Successful
+Gettext reports 0.19.7 - Patching Successful
+Info reports 4.6 - Patching Successful
+Screen reports 4.06.02 - Patching Successful
+VNC server reports 5.3.3 - Patching Successful
+
+step 5) Need to update JAVA
+
+
+#sudo /sds/local/sceplus/sup/AIX/bin/update_java_q0318.ksh
+
+then check below commands
+#cat /INF*
+#oslevel -s
+
+
+
+step 6) Once OS and JAVA update successfully then VM needs to reboot
+
+#sudo shutdown -Fr
+
+
+step 7)Once server come up need to check below commands
+#uptime
+#date
+#df -gt
+#df -gt|wc -l
+#sudo emgr -l
+#ssh -V
+#cat /INF*
+#oslevel -s
+#lppchk -v
+#ifconfig -a
+#netstat -rn
+
+sudo /opt/IBM/ITM/bin/cinfo -r
+
+***If ITM agents are not running then run below command :--
+#sudo /opt/IBM/ITM/bin/itmcmd agent start all
+
+
+step 8) Need to run postcheck script and it should pass
+
+#sudo mount -o soft 146.89.141.138:/sds /sds
+#sudo /sds/local/sceplus/sup/UNIX/bin/aix_snapshot.ksh post
+
+
+step 8) Then hand over to apps/db team to bring up apps/db
+
+step 9)Once apps/db team confirm that Apps/Db up and running fine
+      then we can send notification mail to customer and attach mail in logs and we can close the change .
+
+
+
+
+
+
+ 
 
 
 

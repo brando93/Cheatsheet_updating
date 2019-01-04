@@ -1555,7 +1555,10 @@ RESOLUTION:
 					ITM Agents
 ###################################################################################
 
-Install/Reinstall BaseOS Agents
+							Install/Reinstall BaseOS Agents
+
+							HACER TODO COMO ROOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 Montar la NIM:
 mount 146.89.141.138:/sds /sds
@@ -1564,11 +1567,11 @@ Crear directorio temporal:
 mkdir /tmp/ITMBaseOSAgent/
 
 Copiar software:
-cp /sds/local/sceplus/agents/ITM/ITM6_AIX_64_06230300_SCE.tar /tmp/ITMBaseOSAgent/
+cp /sds/local/sceplus/agents/ITM/ITM6_LINUX_64_06300700_CMS1.tar /tmp/ITMBaseOSAgent/
 
 Descomprimir software:
 cd /tmp/ITMBaseOSAgent/
-tar -xvf /tmp/ITMBaseOSAgent/ITM6_AIX_64_06230300_SCE.tar
+tar -xvf /tmp/ITMBaseOSAgent/ITM6_LINUX_64_06300700_CMS1.tar
 
 Instalar el software:
 cd /tmp/ITMBaseOSAgent/TEMA1/
@@ -1576,6 +1579,8 @@ cd /tmp/ITMBaseOSAgent/TEMA1/
 
 Ejemplo:
 ./esm_instTEMA.sh -t ux -a aix526 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.55 -c ger -l ggaap013
+
+./esm_instTEMA.sh -t lz -a lx8266 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.51 -c <customer_code> -l <servername
 
 Importante: sumo cuidado al indicar el código del cliente y el hostname.
 
