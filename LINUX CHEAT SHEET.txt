@@ -568,7 +568,6 @@ How to configure SSH to debug mode? https://access.redhat.com/solutions/295863/ 
 
 
 
-
 ###############################################################################
 
 
@@ -1289,6 +1288,108 @@ Systemd: Sistema de arranque. Plataforma de administración y configuración cen
 SysV: El sistema de inicio System V controla el arranque de los programas en el instante de inicio de la máquina. Llamado también estilo de arranque (init)
 /etc/skel: The /etc/skel directory contains files and folders that will be copied in the new user’s home directory (login directory), when that user is created with useradd or other commands. The skeleton directory, /etc/skel, allows the administrator (the root user) to create new users having the same files and folders in their home directories.
 Logrotate: The logrotate program consults a confi guration fi le called /etc/logrotate.conf, which includes several default settings andtypically refers to fi les in /etc/logrotate.d to handle specific log files.
+
+------------------------------------------------------------------------------------------------------------------------------
+
+How to clean YUM cache in CentOS / RHEL
+
+By admin
+
+For some operations (for example, a yum install operation), Yum downloads the packages to install into the Yum cache. The cached packages are located in a subdirectory structure from /var/cache/yum that reflects the architecture, the distribution release, and the repository from where the packages were downloaded.
+
+After successful installation, the packages are deleted from the cache. To retain the cached packages, change the keepcache setting to 1 in the /etc/yum.conf file as follows:
+
+# vi /etc/yum.conf
+keepcache = 1
+
+Cleaning the Yum Cache
+
+Clean the Yum cache to reclaim disk space or to clear errors due to corrupted metadata files. To remove cached packages only, use:
+
+# yum clean packages
+
+To delete metadata for each enabled repository, use the following command:
+
+# yum clean metadata
+
+To delete package headers, use the following command:
+
+# yum clean headers
+
+To clean all cached information, use the following command:
+
+# yum clean all
+
+If you get the message “Metadata file does not match checksum” during a Yum operation, clearing the metadata from the cache might not help. In this case, adding the following line to /etc/yum.conf resolves the problem:
+
+# vi /etc/yum.conf
+http_caching=none
+
+Changing default location of yum cache
+
+Sometimes when the default yum cache location is full, you would get an error while installing any yum package.
+
+insufficient space in download directory /var/cache/yum/rhel-x86_64-server-6/packages
+
+As the /var filesystem where yum cache is located is full and there is no disk space for yum to download the system updates, the above error will be shown.
+
+The yum cache location is configured in /etc/yum.conf file as cachedir option in the [main] section and can be changed:
+
+$ cat /etc/yum.conf
+[main]
+cachedir=/var/cache/yum/$basearch/$releasever
+
+
+$$$$$$$$$$$$$$$$$ BEST CLIENT PROBLEM IN REPO %%%%%%%%%%
+
+1) sudo grep "Caching enabled and local cache" /var/opt/BESClient/EDRDeployData/EDR_DeploymentResults.txt
+if I have in output:
+Caching enabled and local cache: /var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs/7dacf066b10caa069df943a6fcfae3db8cc05567-primary.sqlite.bz2 does not match checksum
+Caching enabled and local cache: /var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs/7dacf066b10caa069df943a6fcfae3db8cc05567-primary.sqlite.bz2 does not match checksum
+
+2) cd /var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs
+3) from above path: rm -rf *
+
+en este caso.... movi los files que estan en: */var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs/*
+pero ojo que *RedHatEnterpriseLinux7ServerRPMs* puede cambiar
+No siempre es eso, pero en este escenario parece q eso es lo que hay que hacer --- bueno de los que yo he visto
+Igual, yo no borro - yo los meto en un folder de esa ruta por aquello
+grep "Caching enabled and local cache" EDR_DeploymentResults.txt
+y dependiendo de cuales me dan son esos lo que trabajo
+usualmente es la misma --- en esa ruta/var/opt/BESClient/rhsmyum/cache/*XXX*/  creo un directrio backup y muevo los files ahi
+
+
+
+Please see the most common errors for the tag <type> in EDR_DeploymentResults.txt:
+
+No solution (noSolution) - This error means that the requested target packages cannot be installed on the system because there are conflicts between the target packages and the packages that exist on the system.
+
+Incomplete baseline (incompleteBaseline) - This error may appear if third party packages are fulfilling dependencies and are not recognized by the resolver. When you see this tag <type>incompleteBaseline</type> in EDR_DeploymentResults.txt, and <name>name of RPM</name> is NOT in /var/opt/BESClient/EDR_UnsupportedPackages.txt you will need to install the RPM separately. However if the RPM is in EDR_UnsupportedPackages.txt you will need to downgrade to a version that is supported to proceed. Use the tag <sanityCheckError> from EDR_DeploymentResults.txt to identify what version of this RPM is supported. Once that is corrected and the supported RPM version is installed you may proceed with patching this system.
+
+Forbidden package list error (packageInForbiddenList) -This error is caused by a package on the target listed inn the forbidden package list. Remove the package from the forbidden package list to successfully run the fixlet.
+
+EmptySolution means that the resolver cannot find a solution with the given set of information (packages installed on the system, packages it is trying to install). To resolve this it is often better to have the system as standard as possible. Installing additional third party software and removing packages from the base operating system can make this more difficult for the resolver to resolve all dependencies. It is recommended to move toward using the Native Tools site instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ----------------------------------------------------------------------------------------------------
 
 Displays nice level for processes
@@ -1347,13 +1448,88 @@ sudo pam_tally2 --user=cinstall
 
 RESET / UNLOCK ACCOUNT WITH pam_tally2
 
-pam_tally2 --user=cinstall --reset
+pam_tally2 --user=buradmin --reset
 
 pam_tally2 -r -u cinstall
 
 CHECK IN LOGS
 
 grep "Failed password" /var/log/auth.log
+------------------------------------------------------------------------------------------------------
+
+
+IN9083782 - Fix Sudoers buradmin
+
+visudo -f /etc/sudoers.d/65_sudoers_msdbuild
+
+
+Template of file that works with buradmin - 65_sudoers_msdbuild
+
+# $HeadURL: file:///gsa/pokgsa/projects/g/gtscloud/sceplus/svn_repos/sup/UNIX/etc/sudo/sudoers.d/65_sudoers_msdbuild $
+# $Author: mclark $
+# $Revision: 218 $
+# ***************************************************************************
+# START Command Aliases
+# ***************************************************************************
+
+# ***************************************************************************
+# Sudo Control Stanzas
+# ***************************************************************************
+#
+#=======================================================================================================
+# MSD Installation and Configuration Elevated Permissions - to be removed as part of release to customer
+# DB Installation and Configuration Activation Only
+%db2iadm1  ALL=(ALL) NOPASSWD:ALL
+%odbadm    ALL=(ALL) NOPASSWD:ALL
+%sybadm    ALL=(ALL) NOPASSWD:ALL
+
+# SC4Oracle Activation Only
+%oralls    ALL=(ALL) NOPASSWD:ALL
+%orafad    ALL=(root) NOPASSWD:ALL,NOEXEC:IBM_SHELLESCAPE_ALL,!IBM_SHELLS_ALL,!REBOOT,!STOP,EXEC:PASSWD,PWDADM,!VSUDO,!CHROOT,!CHRTSEC
+%psflls    ALL=(ALL) NOPASSWD:ALL
+%psffad    ALL=(root) NOPASSWD:ALL,NOEXEC:IBM_SHELLESCAPE_ALL,!IBM_SHELLS_ALL,!REBOOT,!STOP,EXEC:PASSWD,PWDADM,!VSUDO,!CHROOT,!CHRTSEC
+
+# SC4SAP Activation Only
+%saplls    ALL=(ALL) NOPASSWD:ALL
+%sapfad    ALL=(root) NOPASSWD:SLIBCLEAN,SAP_CMDS,CAT,GREP,HOST,!SMIT,OSPERF,PAGE,TOMCAT,MOUNTFS,PIO,\
+                      DB2DBA_CMDS,MXDB_CMDS,SAMBA,LSUSER,PRINTER,LISTEMGR,CHMOD,CHOWN,Q_CTRL,!RESTRICTED,EDISH,SU_SAPUSRS
+
+# OS Build and Configuration Activation Only
+%osbuild   ALL=(root) NOPASSWD:ALL
+
+# Added all access for TSM team during build/activation under IN6785564
+%burlls    ALL=(root) NOPASSWD:ALL
+%buradm    ALL=(root) NOPASSWD:ALL
+%bkpadm    ALL=(root) NOPASSWD:ALL
+%tsmlls    ALL=(root) NOPASSWD:ALL
+%tsm       ALL=(root) NOPASSWD:ALL
+
+# Added commands for coeadmin/coeadm to be able to run /usr/sbin/mount via Sev-1 IN1880837
+# BCRS Backup Support
+%coeadmin ALL = (root) NOPASSWD: /usr/sbin/mount, /bin/mount, /usr/bin/mkdir -p /tmp/backupretention, /bin/mkdir -p /tmp/backupretention,\
+                                 /usr/bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
+                                 /bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
+                                 /usr/bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
+                                 /bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
+                                 /tmp/backupRetention/configureDSMFile.sh, /tmp/backupRetention/*StartScheduler.sh *,\
+                                 /tmp/backupRetention/*StopScheduler.sh DAY /opt/tivoli/tsm/client/ba/bin COE2599652 /tmp/backupRetention/
+%coeadm ALL = (root) NOPASSWD: /usr/sbin/mount, /bin/mount, /usr/bin/mkdir -p /tmp/backupretention, /bin/mkdir -p /tmp/backupretention,\
+                               /usr/bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
+                               /bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
+                               /usr/bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
+                               /bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
+                               /tmp/backupRetention/configureDSMFile.sh, /tmp/backupRetention/*StartScheduler.sh *,\
+                               /tmp/backupRetention/*StopScheduler.sh DAY /opt/tivoli/tsm/client/ba/bin COE2599652 /tmp/backupRetention/
+#=======================================================================================================
+
+
+
+
+
+
+
+
+
 
 ------------------------------------------------------------------------------------------------------
 
@@ -2237,7 +2413,25 @@ diff -y <file1> <file2>
 ____________________________________________________________________________________________
 
 
+Hello Team,
 
+Kindly make sure to perform the following task during change activity before reboot the servers.
+
+Please follow below steps before reboot:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Ensure that the Network Manager service is stopped
+# service NetworkManager stop
+or
+/usr/bin/systemctl stop NetworkManager.service
+
+Ensure that the Network Manager service is disabled
+# chkconfig NetworkManager off
+or
+/usr/bin/systemctl disable NetworkManager.service
+
+Backup /etc/resolve.conf and interface files to ~home directory
+
+Note: If the Network Manager is not stopped/disabled before reboot, The NM service will overwrite the /etc/resolve.conf file and the customer domain name will not resolve and the application can't start as expected.
 
 
 RHSA CHANGE
@@ -2289,7 +2483,7 @@ sudo /etc/init.d/winbind status
 sudo /etc/init.d/xinetd status
 sudo /etc/init.d/sssd status
 sudo /etc/init.d/rpcbind status
-sudo /etc/init.d/nfsd status
+sudo /etc/init.d/nfsd
 sudo /etc/init.d/nfs status
 sudo /etc/init.d/postfix status
 sudo /etc/init.d/autofs status
@@ -2304,7 +2498,7 @@ sudo /opt/IBM/ITM/bin/itmcmd agent start -oy sa -o GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent -o GRD start sa
 sudo /opt/IBM/ITM/bin/cinfo -r
 
-sudo cat /var/log/yum.log | grep 'Nov 24'
+sudo cat /var/log/yum.log | grep 'Jan 5'
 
 ----------------------------------------------------------------
 
