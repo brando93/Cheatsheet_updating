@@ -1,0 +1,381 @@
+What is thin provisioning: it is the rest of the storage reserved
+
+systemctl enable --now cockpit.socket: it enables cockpit socket
+
+localhost:9090 ---> to default port after installation connect to rhel8 monitoring GUI website
+
+subscription-manager
+
+subscription-manager attach --auto
+
+New Features:
+
+new yum features based on Fedora
+
+Application streams are delivered in two formats: traditional rpms and new modules
+
+New modules comes with multiple applications versions available
+Modules can be manged by profiles: minimal, default
+
+yum module:
+
+yum modulelist
+yum module provides httpd: searches the module that provides a specific packaged
+yum module info php: gives all info about this module
+yum module info --profile php: shows profiles
+yum module list php: shows wich streams are available
+yum module install php:7.1/<minimal-default> or use yum install @php:7.1: install packaged on specific module profile
+yum module install php:7.2: will install a specific PHP module stream. This will also enable 7.1 stream
+yum module install pho:7.1: will downgrade version from 7.2 to 7.1
+yum install httpd: will have yum automatically enable the module streams this package is in before installa this package
+yum distro-sync: used to update or downgrade packages
+
+Mounts in RHEL 8:
+
+Mounts are handle through systemd
+To trigger a systemd update after modifying /etc/fstab, use systemd daemon-reload
+
+systemctl cat tmp.mount: shows info about mount
+
+Partitions in RHEL 8:
+
+Parted has become the standard ulitity for creating partitions:
+
+$$$$$$Process with PARTED utlity
+
+parted: standar utlity for creating partitions
+
+parted /dev/<nvme0n2 or device name>
+print
+mktable
+gpt
+print
+mkpart
+Start? 1MiB
+End? 1GiB
+print
+gpt
+quit
+lsblk
+
+In parted, partitions types are no longer offered
+Use flags instead:
+boot, root, hidden, raid, lvm, lba
+
+For full support of all partitions types use fdisk
+
+Storage in RHEL 8:
+
+LVM:
+
+Stratis:
+
+net generatoin volume managing file system that uses thi privisioning by default
+Implemented in user space, which makes API access possible
+
+Virtual Data Optimazer:
+
+Focused on storing files in the most efficient WAY
+Manages deduplicated on compressed storage pools
+
+
+Startis:
+
+Stratis is a volume managin file system and in RHEL answers to btrfs and zfs
+On top of stratis a regular file system is neded : xfs
+
+It is build on top of any block device including LVM devices
+It offers advance features:
+
+Thin provisioning
+Snapshots
+Cache tier
+Programmatic API
+Monitoring and repair
+
+
+Stratis architecture:
+
+The stratis pools is created from on or more storage devices (blockdev)
+Stratis creates a /stratis/my-pool directory for each pool
+This directory contains links to devices that represent the file sytems in the pool
+Block devices in a pool may not be thin provisioned
+The (XFS) file system is put in a volume on top of the pool and is an integrated part of it
+Each pool can contain one or more file systems
+File systems are thin provisioned and do not have a fixed size
+The thin volume which is an integrated part of the file system automatically grows as more data is added to the file system
+
+
+Procedure:
+
+
+yum install stratis-cli stratisd
+
+systemctl enable --now stratisd
+
+stratis pool
+
+stratis pool create mypool /dev/<device name/nvme0n2>
+
+stratis pool list
+
+Add new block device later using stratis blockdev add-data
+Partition are NOT supported
+Note that the block device must be at least 1GiB
+
+stratis fs create mypool myfs1
+Note this will create an XFS file system!
+
+stratis fs list mypool: will show all filesytems in the pool
+
+mkdir /myfs1
+
+mount /dev/stratis/mypool/myfs1/myfs1
+
+stratis pool list
+
+stratis filesystem list
+
+stratis blockdev list mypool
+
+ls -l /dev/mapper
+
+
+
+
+
+Extending a stratis pool:
+
+
+stratis pool add-data mypool /dev/<device name>: is used to add another block device
+
+
+
+Stratis snapshots:
+
+
+a snapshot is an individual file system that can be Mounted
+after creating, snapshots can be modified
+a snapshot and its origin are not linked: the snapshotted file system can live longer that the file system it was created From
+each snapshot needs at least half a GB of backing storage for the XFS log
+
+
+Using stratis snapshots:
+
+stratis fs snapshot mypool myfs1 myfs1-snapshot
+-Changes to the original FS will not be reflected in the snapshot
+-Use mount /stratis/mypool/my-fs-snapshot /mnt
+
+Rever the origin volime to the state in the snapshot
+
+umount /myfs1
+stratis fs destroy myppol myfs1
+stratis fs snapshot mypool myf1-snap myfs1
+
+Note that this approach would not work on LVM!
+
+
+Removing stratis snapshots:
+
+
+stratis fs destroy mypool mysnapshot: will delete a snapshot
+stratis fs destroy mypool myfs: will delete a file system
+stratis pool destroy mypool: delete the pool
+
+
+
+Storage VDO:
+
+
+VIRTUAL DATE OPTIMIZER
+
+
+It is used to optimize how date is store on disk
+
+Provides thin-provisined storage:
+
+-Use logical size 10 times the physical size for VMs and containers
+-Use logical size 3 times the physical size for object storage
+
+Used in Cloud/Container/Virtualization enviroments
+It manages deduplicated and compressed storage pools in RHEL 8
+
+
+Procedure Overview:
+
+
+Ensure the underlying block devices are > 4GB
+
+yum install vdo kmod-kvdo
+
+vdo create --name=vdo1 --device=/dev/nvme0n3 --vdoLogicalSize=1T
+
+-Volume is written to /etc/vdoconf.yml
+-vdo.service is used to strart the volume
+
+mkfs.xfs -K /dev/mapper/vdo1
+- -K option: do not attempt to discard blocks while creating the file system
+
+udevadm settle: will wait for the sstem to register the new device name
+
+-In /etc/fstab  include the mount options
+
+x-systemd.requires=vdo.service
+x-systemd.device-timeout=0
+
+Example:
+
+Esta configuracion fallo en el stream
+
+/dev/straatis/mypool/myfs      /myfs       xfs        _netdev      0   0
+
+
+vdostats --human-readable: Monitor using this command
+
+
+grub2-mkconfig -o /boot/grub2/grub.cfg: it updates GRUB configuration
+
+
+
+Managin crypto-policies
+
+
+
+update-crypto-policies --show: shows the current setting
+update-crypto-policies --set FUTURE
+
+
+
+
+Managing Containers:
+
+
+Cgroups: resource management
+Namespaces: process isolation
+SELinux: security
+
+
+RHEL 8 Containers Tools Overview:
+
+
+podman : direct management of pods and containers images
+
+buildah: build, pushing and signing containers images
+
+skopeo: for copying, inspecting and signing images
+
+runc: the container engine that provides container run adn build features to podman and buildah
+
+Install using yum module install container-tools
+
+Optional: yum install podamn-docker: provides docker like syntax in the podamn command
+
+
+PODAMN:
+
+
+Containers images must be fetches from a repository
+
+/etc/containers/registries.conf is used to tell RHEL where to go
+
+By default all is setup to start working
+
+Add your won insecure registries in the [registries.insecure] section
+
+Note that registry.redhat.io requieres authentication, registry.access.redhat.com does not need any authetntication but is deprecated
+
+
+
+podman search rhel8: will look up the RHEL 8 image
+
+podam pull rhel8-beta/rhel: will download it from the first registry that answers:
+
+it's not requiered to pull an image before you can run a container, running the container automaticaly pull the image as well
+
+podams images: will show all images stores on the local systems
+
+podamn inspect <imagename>: will inspect image contents. It will show you what exactly will happen when you run the container (loook for CMD into it)
+
+podman run <image>: will run it and executre the default command by default you will attach to the container and enter the current container shell
+
+podman run -d <image ID>: used to detach
+
+podman run -rm ubuntu:lates cat /etc/os-release: will start the container run the command and exit and delete the container afterwards (-rm)
+
+podamn run --nama=mycontainer -it ubuntu:latest /bin/bash : will start the container, run the bash shell and keep it open
+-i is interactive
+-t opens a terminal
+
+podman run --name=mycontainer -v /dev/log:/dev/log --rm ubuntu:latest
+logger hello: will start the container and map the local /dev/log device to the container /dev/log device. Next, logs a message and exits.
+
+
+podman ps  : shows all container actually running
+
+podamn inspect <id>
+
+
+
+
+
+BUILDAH:
+
+
+
+buildah: is a tool that helps in building images
+It is not the preferred tool for actually running containers
+Does not need a container runtime daemon
+
+buildah bud: will build a container from a Dockerfile
+buildah from <imagesname> buils a image from another image
+buildah from scratch: allows you to build from 0
+buildah inspect: shows container or image metadata
+buildah commit: used updated contents of a container root FS as a FS layer to commit content 
+
+
+
+
+
+NFSTABLES:
+
+nfstables is the succesor of iptables
+
+nft list tables:
+
+nft list table firewalld: shows what's inside
+
+firewall-cmd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SANDER GITHUB:
+https://github.com/sandervanvugt/rhel8

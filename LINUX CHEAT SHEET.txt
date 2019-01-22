@@ -1925,6 +1925,125 @@ bldgdp-sanddb01  ud    26620  root   15:29  bldgdp-sanddb01_db2inst1  ...running
 
 
 
+_________________________________________________________________________________________
+
+
+
+							NTP STATUS
+
+sudo ntpq -pn; sudo ntpstat; sudo service ntpd stop;sudo ntpdate <ip del ntp>;sleep 10; sudo ntpd -gq; sleep 10; sudo service ntpd start; sudo ntpq -pn; sudo ntpstat;
+
+
+
+
+
+							Network Time Protocol Setup
+							As opposed to the manual setup described above, you can also synchronize the system clock with a remote server over the Network Time Protocol (NTP). For the one-time synchronization only, use the ntpdate command:
+
+							    Firstly, check whether the selected NTP server is accessible:
+
+							    ~]# ntpdate -q server_address
+
+							    For example:
+
+							    ~]# ntpdate -q 0.rhel.pool.ntp.org
+
+							    When you find a satisfactory server, run the ntpdate command followed by one or more server addresses:
+
+							    ~]# ntpdate server_address...
+
+							    For instance:
+
+							    ~]# ntpdate 0.rhel.pool.ntp.org 1.rhel.pool.ntp.org
+
+							    Unless an error message is displayed, the system time should now be set. You can check the current by setting typing date without any additional arguments as shown in Section 2.2.1, “Date and Time Setup”.
+							    In most cases, these steps are sufficient. Only if you really need one or more system services to always use the correct time, enable running the ntpdate at boot time:
+
+							    ~]# chkconfig ntpdate on
+
+							    For more information about system services and their setup, see Chapter 12, Services and Daemons.
+
+							    Note
+							    If the synchronization with the time server at boot time keeps failing, i.e., you find a relevant error message in the /var/log/boot.log system log, try to add the following line to /etc/sysconfig/network:
+
+							    NETWORKWAIT=1
+
+							However, the more convenient way is to set the ntpd daemon to synchronize the time at boot time automatically:
+
+							    Open the NTP configuration file /etc/ntp.conf in a text editor such as vi or nano, or create a new one if it does not already exist:
+
+							    ~]# nano /etc/ntp.conf
+
+							    Now add or edit the list of public NTP servers. If you are using Red Hat Enterprise Linux 6, the file should already contain the following lines, but feel free to change or expand these according to your needs:
+
+							    server 0.rhel.pool.ntp.org iburst
+							    server 1.rhel.pool.ntp.org iburst
+							    server 2.rhel.pool.ntp.org iburst
+							    server 3.rhel.pool.ntp.org iburst
+
+							    The iburst directive at the end of each line is to speed up the initial synchronization. As of Red Hat Enterprise Linux 6.5 it is added by default. If upgrading from a previous minor release, and your /etc/ntp.conf file has been modified, then the upgrade to Red Hat Enterprise Linux 6.5 will create a new file /etc/ntp.conf.rpmnew and will not alter the existing /etc/ntp.conf file.
+							    Once you have the list of servers complete, in the same file, set the proper permissions, giving the unrestricted access to localhost only:
+
+							    restrict default kod nomodify notrap nopeer noquery
+							    restrict -6 default kod nomodify notrap nopeer noquery
+							    restrict 127.0.0.1
+							    restrict -6 ::1
+
+							    Save all changes, exit the editor, and restart the NTP daemon:
+
+							    ~]# service ntpd restart
+
+							    Make sure that ntpd is started at boot time:
+
+							    ~]# chkconfig ntpd on
+
+
+
+
+
+
+
+Checking the Status of NTP
+To check if ntpd is configured to run at system start, issue the following command:
+
+~]$ chkconfig --list ntpd
+ntpd           	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+
+By default, when ntpd is installed, it is configured to start at every system start.
+To check if ntpd is running, issue the following command:
+
+~]$ ntpq -p
+     remote           refid      st t when poll reach   delay   offset  jitter
+==============================================================================
++clock.util.phx2 .CDMA.           1 u  111  128  377  175.495    3.076   2.250
+*clock02.util.ph .CDMA.           1 u   69  128  377  175.357    7.641   3.671
+ ms21.snowflakeh .STEP.          16 u    - 1024    0    0.000    0.000   0.000
+ rs11.lvs.iif.hu .STEP.          16 u    - 1024    0    0.000    0.000   0.000
+ 2001:470:28:bde .STEP.          16 u    - 1024    0    0.000    0.000   0.000
+
+The command lists connected time servers and displays information indicating when they were last polled and the stability of the replies. The column headings are as follows:
+
+    remote and refid: remote NTP server, and its NTP server
+    st: stratum of server
+    t: type of server (local, unicast, multicast, or broadcast)
+    poll: how frequently to query server (in seconds)
+    when: how long since last poll (in seconds)
+    reach: octal bitmask of success or failure of last 8 queries (left-shifted); 377 = 11111111 = all recent queries were successful; 257 = 10101111 = 4 most recent were successful, 5 and 7 failed
+    delay: network round trip time (in milliseconds)
+    offset: difference between local clock and remote clock (in milliseconds)
+    jitter: difference of successive time values from server (high jitter could be due to an unstable clock or, more likely, poor network performance)
+
+To obtain a brief status report from ntpd, issue the following command:
+
+~]$ ntpstat
+unsynchronised
+  time server re-starting
+   polling server every 64 s
+
+~]$ ntpstat
+synchronised to NTP server (10.5.26.10) at stratum 2
+   time correct to within 52 ms
+   polling server every 1024 s
 
 
 
@@ -2029,6 +2148,24 @@ journal -p err
 journalctl --since today
 journalctl --since 9:05:00 --until 9:15;00
 journalctl --since "2014-02-10 20:30:00" --until "2014-02-13 12:00:00"
+____________________________________________________________________________________________
+
+
+												DSMCAD DISABLE/ENABLE
+
+RHEL 7 / RHEL 6
+sudo systemctl stop dsmcad / sudo /etc/init.d/dsmcad stop
+sudo systemctl disable dsmcad / sudo chkconfig dsmcad off
+---
+RHEL 7 / RHEL 6
+sudo systemctl start dsmcad_DAY / sudo /etc/init.d/dsmcad_DAY start
+sudo systemctl enable dsmcad_DAY / sudo chkconfig dsmcad_DAY on
+____________________________________________________________________________________________
+
+						LIST ALL SERVICES Running
+
+service --status-all
+
 
 
 
@@ -2464,7 +2601,7 @@ sudo /usr/bin/systemctl start NetworkManager.service
 
 Ensure that the Network Manager service is disabled
 sudo chkconfig NetworkManager off
-systemctl disable NetworkManager.service
+sudo systemctl disable NetworkManager.service
 or
 sudo /usr/bin/systemctl enable NetworkManager.service
 
@@ -2498,7 +2635,7 @@ sudo /opt/IBM/ITM/bin/itmcmd agent start -oy sa -o GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent -o GRD start sa
 sudo /opt/IBM/ITM/bin/cinfo -r
 
-sudo cat /var/log/yum.log | grep 'Jan 5'
+sudo cat /var/log/yum.log | grep 'Jan 12'
 
 ----------------------------------------------------------------
 

@@ -604,10 +604,96 @@ exit 0
 ####################################################################################################
 
 
+								PRE/POST CHECKS AIX
 
 
 
 
+Task: Take Pre and Post checks on each of the customer VMs from the list below, and unmanage PowerHA clusters where applicable.
+
+Servers in scope:
+
+deeh11es11005 172.18.103.5
+deeh11es11009 172.18.103.9
+deeh11es12005 172.18.104.5
+deeh11es12010 172.18.104.16
+
+
+
+For each of the VMs from the list, do:
+
+1. Sign in to the VM using ssh.
+
+# ssh <vm_name_or_ip>
+
+2. Take a pre-check of the system. Ignore warnings related system firmware/serial number change or any warnings related to base hardware changes.
+
+# cd /sds/local/sceplus/sup/UNIX/bin
+# sudo ./aix_snapshot.ksh pre
+
+3. For any PowerHA clusters identified from the list, put the cluster in unmanaged state.
+
+4. Notify the SysP BHT performer that frame evacuation may begin.
+
+5. When notified by the SysP BHT performer that the frame evacuation task is complete, take a post-check of the system:
+
+# cd /sds/local/sceplus/sup/UNIX/bin
+# sudo ./aix_snapshot.ksh post
+
+Note: Ignore warnings related system firmware/serial number change or any warning related to base hardware change.
+
+6. Validate disks paths are enabled and no failed and/or missing disk paths are seen:
+
+# lspath
+
+7. Check the error logs:
+
+# errpt
+
+8. Check the LPAR serial number to verify that it matches the serial number of its hosting frame:
+
+# lsconf | grep Machine
+
+9. Verify the RMC connection to HMC from the VM by running the following command:
+
+# lsrsrc IBM.ManagementServer (for AIX 6.1)
+# lsrsrc IBM.MCP (for AIX 7.1)
+
+This will display the HMC information and IP address, which is an indication that it can connect to the HMC through RMC.
+This is important since this is were automation is used to DLPAR (add, delete, change) cpu, memory and devices dynamically.
+
+Note: If it is not working, then the RMC daemons must be refreshed or restarted by following the steps below:
+
+- Stop the RMC daemon: # /usr/sbin/rsct/bin/rmcctrl -z
+- Start the RCM daemon: # /usr/sbin/rsct/bin/rmcctrl -A
+- Enable the RMC daemon for remote connections: # /usr/sbin/rsct/bin/rmcctrl -p
+- Return RMC connection status: # /usr/sbin/rsct/bin/rmcdomainstatus -s ctrmc
+
+Note2: BE CAREFUL not to run this if PowerHA and/or GPFS cluster services are running on the VM.
+       PowerHA and GPFS cluster services must be stopped before stoping and restarting RMC daemons. Otherwise, this will impact the PowerHA/GPFS cluster availability.
+
+Reference URL to reset the RMC Daemons if it is not working: http://lparbox.com/how-to/virtualization/29
+
+10. Notify the SysP BHT performer that post-checks are complete and standby for the last round of system checks.
+
+11. When notified by the SysP BHT performer that the VMs have been rehomed to the original pSeries host, repeat steps 5 through 9.
+
+12. If any PowerHA clusters were unmanaged for this change activity, make sure that it is put back to managed state before this task is marked complete.
+
+
+AIX Global Performing Engineers:
+
+TBD
+
+
+
+
+
+
+
+
+
+##########################################################################################################3
 
 Stand alone AIX VM OS patching steps:---
 *****************************************
@@ -733,7 +819,7 @@ step 9)Once apps/db team confirm that Apps/Db up and running fine
 
 
 
- 
+
 
 
 
