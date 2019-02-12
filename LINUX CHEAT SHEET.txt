@@ -1,7 +1,4 @@
-
-							LINUX - BRANDON RODRIGUEZ
-
-Commands:
+12/02/2019
 
 sudo grep -i brandon /home/ibmadmin/.ssh/authorized_keys
 
@@ -64,7 +61,7 @@ wc: count lines in text file
 cpio: is used to backup files mostly. cpio needs to get a list of files in order to copy. E.g.: fin ./boot /home/brodriguez/file_backedup.cpio
 pr: used to print plain text of a file. E.g.: pr myfile.txt
 zcat: see content in files .tar without extracting
-
+strace -T -tt -f -v -s 4096 -o /tmp/strace_pwd_db2inst1.out pwd: allow to track all calls and signals from commands pwd and send output to file in /tmp
 ldconfig: Rebuilding the Library Cache. Creates the necessary links and cache to the most recent shared libraries found in the directories specified on the command line, in the file  /etc/ld.so.conf, and  in  the trusted directories, /lib and /usr/lib.
 lsmod: displays information only about kernel modules
 ldd: prints shared object dependencies and libraries
@@ -131,97 +128,6 @@ $$$$$$$$$$$$$OTHER WAY TO CHANGE TIMEZONE$$$$$$$$$$$$$$$$
 # date
 # rm -rm /etc/localtime
 # Create a symbolic link from your chosen time zone file to the /etc/lcoaltime. For instance, you can type <ln -s /usr/share/zoneinfo/US/Easter localtime> to set up the time in the US Easter time.
-
-_______________________________________________________________________________________________________________________________
-
-
-
-
-                                 Linux Duplicate Packages/Recovery Process
-
-
-
-
-1. Take Snapshot of the VM which has duplicate packages
-
-
-2.Execute the below command
-
-#yum check &> /tmp/yumcheck.out
-
-The above command will take more then 45 minutes  to 1 Hour depends on number of packages installed on server and this will increase the CPU load 99% .
-
-
-The progress can be monitored through the blow command
-
-
-#tailf /tmp/yumcheck.out
-
-
-3.Once Yum check completed .Execute the below command.
-
-#grep duplicate /tmp/yumcheck.out | awk '{ print $NF }' | sort > /tmp/dups.txt
-
-
-4.Open the /tmp/dups.txt
-
-#vi /tmp/dups.txt
-
-remove the numbers before the package name and save the file
-
-5.Prepare the final list
-
-#cat /tmp/dups.txt | sort > /tmp/removethese.txt
-
-
-6.Check number of Packages
-
-#wc -l /tmp/removethese.txt
-
-
-7.Remove the duplicate packages
-
-for i in  `cat /tmp/removethese.txt`; do  rpm -e $i --nodeps; done
-
-8. if any packages has conflicts that can be re installed
-
-
-# yum reinstall packagename
-
-if re install didn't work try
-
-#yum update package name
-
-if update fails remove with no deps and install it back
-
-#rpm -e packagaename –nopdeps
-
-#yum install packagename
-
-9.if required re create a inird images if you are re installing the Kernel packages .
-
-10.Again Execute yum check
-
-#yum check &> /tmp/yumfinal.out
-
-
-The above command will take more then 45 minutes  to 1 Hour depends on number of packages installed on server and this will increase the CPU load 99% .
-
-11.Once all duplicate and Conflict packages are cleaned reboot the server .
-
-
-#reboot
-
-12.Do the yum update to make sure future update works
-
-#yum update
-
-
-13. App/DB Validation .
-
-
-
-
 
 
 
@@ -564,6 +470,7 @@ How to configure SSH to debug mode? https://access.redhat.com/solutions/295863/ 
 1. Open the `/etc/ssh/sshd_config` file in a text editor # vim /etc/ssh/sshd_config
 2. Add the following line and save the file LogLevel DEBUG3
 3. Restart SSHD # service sshd restart "
+
 
 
 
@@ -956,8 +863,7 @@ at: You may simply want to run a single command at a specific point in the futur
 
 Creating a Swap File:
 To add a swap file:
-1. Determine the size of the new swap file in megabytes and multiply by 1024 to determine the number of blocks.
-For example, the block size of a 64 mb swap file is 65536.
+1. Determine the size of the new swap file in megabytes and multiply by 1024 to determine the number of blocks. For example, the block size of a 64 mb swap file is 65536.
 2. At a shell prompt as root, type the following command with count being equal to the desired block size:
 a. dd if=/dev/zero of=swapfile bs=1024 count=65536
 3. Set up the swap file with the command:
@@ -1289,104 +1195,96 @@ SysV: El sistema de inicio System V controla el arranque de los programas en el 
 /etc/skel: The /etc/skel directory contains files and folders that will be copied in the new user’s home directory (login directory), when that user is created with useradd or other commands. The skeleton directory, /etc/skel, allows the administrator (the root user) to create new users having the same files and folders in their home directories.
 Logrotate: The logrotate program consults a confi guration fi le called /etc/logrotate.conf, which includes several default settings andtypically refers to fi les in /etc/logrotate.d to handle specific log files.
 
-------------------------------------------------------------------------------------------------------------------------------
-
-How to clean YUM cache in CentOS / RHEL
-
-By admin
-
-For some operations (for example, a yum install operation), Yum downloads the packages to install into the Yum cache. The cached packages are located in a subdirectory structure from /var/cache/yum that reflects the architecture, the distribution release, and the repository from where the packages were downloaded.
-
-After successful installation, the packages are deleted from the cache. To retain the cached packages, change the keepcache setting to 1 in the /etc/yum.conf file as follows:
-
-# vi /etc/yum.conf
-keepcache = 1
-
-Cleaning the Yum Cache
-
-Clean the Yum cache to reclaim disk space or to clear errors due to corrupted metadata files. To remove cached packages only, use:
-
-# yum clean packages
-
-To delete metadata for each enabled repository, use the following command:
-
-# yum clean metadata
-
-To delete package headers, use the following command:
-
-# yum clean headers
-
-To clean all cached information, use the following command:
-
-# yum clean all
-
-If you get the message “Metadata file does not match checksum” during a Yum operation, clearing the metadata from the cache might not help. In this case, adding the following line to /etc/yum.conf resolves the problem:
-
-# vi /etc/yum.conf
-http_caching=none
-
-Changing default location of yum cache
-
-Sometimes when the default yum cache location is full, you would get an error while installing any yum package.
-
-insufficient space in download directory /var/cache/yum/rhel-x86_64-server-6/packages
-
-As the /var filesystem where yum cache is located is full and there is no disk space for yum to download the system updates, the above error will be shown.
-
-The yum cache location is configured in /etc/yum.conf file as cachedir option in the [main] section and can be changed:
-
-$ cat /etc/yum.conf
-[main]
-cachedir=/var/cache/yum/$basearch/$releasever
-
-
-$$$$$$$$$$$$$$$$$ BEST CLIENT PROBLEM IN REPO %%%%%%%%%%
-
-1) sudo grep "Caching enabled and local cache" /var/opt/BESClient/EDRDeployData/EDR_DeploymentResults.txt
-if I have in output:
-Caching enabled and local cache: /var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs/7dacf066b10caa069df943a6fcfae3db8cc05567-primary.sqlite.bz2 does not match checksum
-Caching enabled and local cache: /var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs/7dacf066b10caa069df943a6fcfae3db8cc05567-primary.sqlite.bz2 does not match checksum
-
-2) cd /var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs
-3) from above path: rm -rf *
-
-en este caso.... movi los files que estan en: */var/opt/BESClient/rhsmyum/cache/RedHatEnterpriseLinux7ServerRPMs/*
-pero ojo que *RedHatEnterpriseLinux7ServerRPMs* puede cambiar
-No siempre es eso, pero en este escenario parece q eso es lo que hay que hacer --- bueno de los que yo he visto
-Igual, yo no borro - yo los meto en un folder de esa ruta por aquello
-grep "Caching enabled and local cache" EDR_DeploymentResults.txt
-y dependiendo de cuales me dan son esos lo que trabajo
-usualmente es la misma --- en esa ruta/var/opt/BESClient/rhsmyum/cache/*XXX*/  creo un directrio backup y muevo los files ahi
 
 
 
-Please see the most common errors for the tag <type> in EDR_DeploymentResults.txt:
-
-No solution (noSolution) - This error means that the requested target packages cannot be installed on the system because there are conflicts between the target packages and the packages that exist on the system.
-
-Incomplete baseline (incompleteBaseline) - This error may appear if third party packages are fulfilling dependencies and are not recognized by the resolver. When you see this tag <type>incompleteBaseline</type> in EDR_DeploymentResults.txt, and <name>name of RPM</name> is NOT in /var/opt/BESClient/EDR_UnsupportedPackages.txt you will need to install the RPM separately. However if the RPM is in EDR_UnsupportedPackages.txt you will need to downgrade to a version that is supported to proceed. Use the tag <sanityCheckError> from EDR_DeploymentResults.txt to identify what version of this RPM is supported. Once that is corrected and the supported RPM version is installed you may proceed with patching this system.
-
-Forbidden package list error (packageInForbiddenList) -This error is caused by a package on the target listed inn the forbidden package list. Remove the package from the forbidden package list to successfully run the fixlet.
-
-EmptySolution means that the resolver cannot find a solution with the given set of information (packages installed on the system, packages it is trying to install). To resolve this it is often better to have the system as standard as possible. Installing additional third party software and removing packages from the base operating system can make this more difficult for the resolver to resolve all dependencies. It is recommended to move toward using the Native Tools site instead.
+----------------------------------------------------------------------------------------------------
 
 
 
 
 
+Linux Duplicate Packages Recovery Process
 
 
 
 
+1. Take Snapshot of the VM which has duplicate packages
 
 
+2.Execute the below command
+
+#yum check &> /tmp/yumcheck.out
+
+The above command will take more then 45 minutes  to 1 Hour depends on number of packages installed on server and this will increase the CPU load 99% .
 
 
+The progress can be monitored through the blow command
 
 
+#tailf /tmp/yumcheck.out
 
 
+3.Once Yum check completed .Execute the below command.
 
+#grep duplicate /tmp/yumcheck.out | awk '{ print $NF }' | sort > /tmp/dups.txt
+
+
+4.Open the /tmp/dups.txt
+
+#vi /tmp/dups.txt
+
+remove the numbers before the package name and save the file
+
+5.Prepare the final list
+
+#cat /tmp/dups.txt | sort > /tmp/removethese.txt
+
+
+6.Check number of Packages
+
+#wc -l /tmp/removethese.txt
+
+
+7.Remove the duplicate packages
+
+for i in  `cat /tmp/removethese.txt`; do  rpm -e $i --nodeps; done
+
+8. if any packages has conflicts that can be re installed
+
+
+# yum reinstall packagename
+
+if re install didn't work try
+
+#yum update package name
+
+if update fails remove with no deps and install it back
+
+#rpm -e packagaename –nopdeps
+
+#yum install packagename
+
+9.if required re create a inird images if you are re installing the Kernel packages .
+
+10.Again Execute yum check
+
+#yum check &> /tmp/yumfinal.out
+
+
+The above command will take more then 45 minutes  to 1 Hour depends on number of packages installed on server and this will increase the CPU load 99% .
+
+11.Once all duplicate and Conflict packages are cleaned reboot the server .
+
+
+#reboot
+
+12.Do the yum update to make sure future update works
+
+#yum update
+
+
+13. App/DB Validation .
 
 
 
@@ -1399,27 +1297,6 @@ ps axo pid, comm,nice --sort=-nice
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-								PAM UNABLE TO DLOPEN
-
-Dec 20 17:50:18 lcmspsag001 sudo: PAM unable to dlopen(/usr/lib64/security/pam_ldap.so): /usr/lib64/security/pam_ldap.so: cannot open shared object file: No such file or directory
-Dec 20 17:50:18 lcmspsag001 sudo: PAM adding faulty module: /usr/lib64/security/pam_ldap.so
-
-
-scp de lcmspsag002 a lcmspsag001
-> /usr/lib64/security/pam_ldap.so
-en lcmspsag001 vi /etc/pam.d/password-auth cambie
-> auth        required     /lib/security/$ISA/pam_listfile.so item=user sense=deny file=/etc/security/$FILENAME onerr=succeed
-por
-> auth        required      /lib64/security/$ISA/pam_listfile.so item=user sense=deny file=/etc/security/$FILENAME onerr=succeed
-porque la ruta no existia :slightly_smiling_face:
-el sistema es de 64bits no 32 jajaja
-
-y ya con eso
-
-
-
-
-____----------------------------------------------------------------------------------------------------------
 
 !!!!!!!!!!!!!!!!!!!!!VALIDAR VM Y SI ESTA EN READ ONLY = RO!!!!!!!!!!!!!!!!!!!!!
 
@@ -1440,96 +1317,53 @@ Ejemplo:
 #brodriguez$RHEL: egrep " ro,|,ro " /proc/mounts
 /dev/sda3 / ext4 ro,seclabel,relatime,barrier=1,data=ordered 0 0
 /dev/sda5 /var ext4 ro,seclabel,relatime,barrier=1,data=ordered 0 0
+
+
+!!!!!!!!!!!!!!! FIX RO= READ ONLY FS  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+sudo mount -o remount,rw <filesystem_path>
+
 ------------------------------------------------------------------------------------------------------
 
+								KERNEL PANIC
+
+Solution: create proper init image.
+
+mkinitrd --help : it will show you the kernel version you need to run
+
+First option:
+
+1- Boot in rescue mode or run older image
+2- Check space in /boot and /tmp
+3- Checks logs
+4- Check current version of kernel installed and compared: uname -r and rpm -qa | grep kernel
+5- yum remove current and yum install new one
+
+Second option:
+
+1- Rescue mode
+2- cd /boot/ and ls
+3- uname -r
+4- check and validate .img version in /boot/ and copy it
+5- run command: mkinitrd --force <paste version here> or dracut -f /boot/initramfs<init kernel version>
+
+Extra options:
+
+This issue can be caused due to issue on selinux policy configured on /etc/selinux/config
+
+Boot on rescue mode and update selinux config file as follows: SELINUX=disabled SELINUXTYPE=targeted
+
+Reboot the system
+
+After the successful boot you can re-enable selinux
+
+------------------------------------------------------------------------------------------------------
 CHECKING FAILURE SSH ATTEMPS
 
 sudo pam_tally2 --user=cinstall
 
-RESET / UNLOCK ACCOUNT WITH pam_tally2
-
-pam_tally2 --user=buradmin --reset
-
-pam_tally2 -r -u cinstall
-
-CHECK IN LOGS
 
 grep "Failed password" /var/log/auth.log
-------------------------------------------------------------------------------------------------------
-
-
-IN9083782 - Fix Sudoers buradmin
-
-visudo -f /etc/sudoers.d/65_sudoers_msdbuild
-
-
-Template of file that works with buradmin - 65_sudoers_msdbuild
-
-# $HeadURL: file:///gsa/pokgsa/projects/g/gtscloud/sceplus/svn_repos/sup/UNIX/etc/sudo/sudoers.d/65_sudoers_msdbuild $
-# $Author: mclark $
-# $Revision: 218 $
-# ***************************************************************************
-# START Command Aliases
-# ***************************************************************************
-
-# ***************************************************************************
-# Sudo Control Stanzas
-# ***************************************************************************
-#
-#=======================================================================================================
-# MSD Installation and Configuration Elevated Permissions - to be removed as part of release to customer
-# DB Installation and Configuration Activation Only
-%db2iadm1  ALL=(ALL) NOPASSWD:ALL
-%odbadm    ALL=(ALL) NOPASSWD:ALL
-%sybadm    ALL=(ALL) NOPASSWD:ALL
-
-# SC4Oracle Activation Only
-%oralls    ALL=(ALL) NOPASSWD:ALL
-%orafad    ALL=(root) NOPASSWD:ALL,NOEXEC:IBM_SHELLESCAPE_ALL,!IBM_SHELLS_ALL,!REBOOT,!STOP,EXEC:PASSWD,PWDADM,!VSUDO,!CHROOT,!CHRTSEC
-%psflls    ALL=(ALL) NOPASSWD:ALL
-%psffad    ALL=(root) NOPASSWD:ALL,NOEXEC:IBM_SHELLESCAPE_ALL,!IBM_SHELLS_ALL,!REBOOT,!STOP,EXEC:PASSWD,PWDADM,!VSUDO,!CHROOT,!CHRTSEC
-
-# SC4SAP Activation Only
-%saplls    ALL=(ALL) NOPASSWD:ALL
-%sapfad    ALL=(root) NOPASSWD:SLIBCLEAN,SAP_CMDS,CAT,GREP,HOST,!SMIT,OSPERF,PAGE,TOMCAT,MOUNTFS,PIO,\
-                      DB2DBA_CMDS,MXDB_CMDS,SAMBA,LSUSER,PRINTER,LISTEMGR,CHMOD,CHOWN,Q_CTRL,!RESTRICTED,EDISH,SU_SAPUSRS
-
-# OS Build and Configuration Activation Only
-%osbuild   ALL=(root) NOPASSWD:ALL
-
-# Added all access for TSM team during build/activation under IN6785564
-%burlls    ALL=(root) NOPASSWD:ALL
-%buradm    ALL=(root) NOPASSWD:ALL
-%bkpadm    ALL=(root) NOPASSWD:ALL
-%tsmlls    ALL=(root) NOPASSWD:ALL
-%tsm       ALL=(root) NOPASSWD:ALL
-
-# Added commands for coeadmin/coeadm to be able to run /usr/sbin/mount via Sev-1 IN1880837
-# BCRS Backup Support
-%coeadmin ALL = (root) NOPASSWD: /usr/sbin/mount, /bin/mount, /usr/bin/mkdir -p /tmp/backupretention, /bin/mkdir -p /tmp/backupretention,\
-                                 /usr/bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
-                                 /bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
-                                 /usr/bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
-                                 /bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
-                                 /tmp/backupRetention/configureDSMFile.sh, /tmp/backupRetention/*StartScheduler.sh *,\
-                                 /tmp/backupRetention/*StopScheduler.sh DAY /opt/tivoli/tsm/client/ba/bin COE2599652 /tmp/backupRetention/
-%coeadm ALL = (root) NOPASSWD: /usr/sbin/mount, /bin/mount, /usr/bin/mkdir -p /tmp/backupretention, /bin/mkdir -p /tmp/backupretention,\
-                               /usr/bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
-                               /bin/cp -R /tmp/backupretention/agents/TSM/backupRetention /tmp/backupRetention,\
-                               /usr/bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
-                               /bin/cp -R /opt/tivoli/tsm/client/ba/bin/dsm.sys /tmp/*,\
-                               /tmp/backupRetention/configureDSMFile.sh, /tmp/backupRetention/*StartScheduler.sh *,\
-                               /tmp/backupRetention/*StopScheduler.sh DAY /opt/tivoli/tsm/client/ba/bin COE2599652 /tmp/backupRetention/
-#=======================================================================================================
-
-
-
-
-
-
-
-
-
 
 ------------------------------------------------------------------------------------------------------
 
@@ -1674,15 +1508,13 @@ PermitRootLogin without-password
 __________________________________________________________________________________________________
 
 
-
-
-
 			ITM AGENT OFFLINE
 
 sudo /opt/IBM/ITM/bin/cinfo -r
-sudo /opt/IBM/ITM/bin/itmcmd agent -f stop ul
+sudo /opt/IBM/ITM/bin/itmcmd agent -f stop lz
 sudo /opt/IBM/ITM/bin/itmcmd agent stop all
 sudo /opt/IBM/ITM/bin/itmcmd agent start all
+
 sudo service crond status
 
 sudo service crond start
@@ -1731,14 +1563,10 @@ RESOLUTION:
 					ITM Agents
 ###################################################################################
 
-							Install/Reinstall BaseOS Agents
-
-							HACER TODO COMO ROOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+Install/Reinstall BaseOS Agents
 
 Montar la NIM:
-mount 146.89.141.138:/sds /sds
-
+sudo mount -t nfs 146.89.141.138:/sds /sds -o nfsvers=3
 Crear directorio temporal:
 mkdir /tmp/ITMBaseOSAgent/
 
@@ -1749,14 +1577,18 @@ Descomprimir software:
 cd /tmp/ITMBaseOSAgent/
 tar -xvf /tmp/ITMBaseOSAgent/ITM6_LINUX_64_06300700_CMS1.tar
 
+
+RUN IT AS ROOT!!!!! GOD DAMN IT!!!
+
+
 Instalar el software:
 cd /tmp/ITMBaseOSAgent/TEMA1/
 ./esm_instTEMA.sh -t ux -a aix526 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.55 -c <customer_code> -l <servername>
+./esm_instTEMA.sh -t lz -a lx8266 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.51 -c <customer_code> -l <servername>
 
 Ejemplo:
 ./esm_instTEMA.sh -t ux -a aix526 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.55 -c ger -l ggaap013
-
-./esm_instTEMA.sh -t lz -a lx8266 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.51 -c <customer_code> -l <servername
+./esm_instTEMA.sh -t lz -a lx8266 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.51 -c <customer_code> -l <servername>
 
 Importante: sumo cuidado al indicar el código del cliente y el hostname.
 
@@ -1891,164 +1723,6 @@ valsapgp101  ux    10289224  root   Feb16     None  ...running
 valsapgp101  sa    19136594  root   Feb21     GP1   ...running
 valsapgp101  rz    38207538  root   19:35:27  GP1   ...running
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-#ITM Agent Offline: db2inst1:qg1_bldgdp-sanddb01:UD
-
-Se busca el nombre de la instancia:
-
-$ ps -ef|grep db2sysc
-db2admin 25588 25362  0 15:27 pts/0    00:00:00 grep db2sysc
-db2inst1 28823 28821 10  2018 ?        6-04:06:02 db2sysc 0
-
-Despues con el nombre del agente offline y la instancia procedemos a iniciar el agente:
-
-$ sudo /opt/IBM/ITM/bin/itmcmd agent -o db2inst1 start ud
-itmcmd agent        : Sourcing db2profile for user db2inst1
-Processing. Please wait...
-Starting IBM Tivoli Composite Application Manager Agent for DB2 ...
-IBM Tivoli Composite Application Manager Agent for DB2 started
-
-$ sudo /opt/IBM/ITM/bin/cinfo -r
-
-*********** Wed Jan  2 15:30:15 UTC 2019 ******************
-User: root Groups: root
-Host name : bldgdp-sanddb01  Installer Lvl:06.30.07.00
-CandleHome: /opt/IBM/ITM
-***********************************************************
-Host             Prod  PID    Owner  Start  ID                        ..Status
-bldgdp-sanddb01  ul    23258  root   2018   None                      ...running
-bldgdp-sanddb01  lz    13423  root   15:08  None                      ...running
-bldgdp-sanddb01  ud    26620  root   15:29  bldgdp-sanddb01_db2inst1  ...running
-[osadmin@bldgdp-sanddb01 ~]$
-
-
-
-_________________________________________________________________________________________
-
-
-
-							NTP STATUS
-
-sudo ntpq -pn; sudo ntpstat; sudo service ntpd stop;sudo ntpdate <ip del ntp>;sleep 10; sudo ntpd -gq; sleep 10; sudo service ntpd start; sudo ntpq -pn; sudo ntpstat;
-
-
-
-
-
-							Network Time Protocol Setup
-							As opposed to the manual setup described above, you can also synchronize the system clock with a remote server over the Network Time Protocol (NTP). For the one-time synchronization only, use the ntpdate command:
-
-							    Firstly, check whether the selected NTP server is accessible:
-
-							    ~]# ntpdate -q server_address
-
-							    For example:
-
-							    ~]# ntpdate -q 0.rhel.pool.ntp.org
-
-							    When you find a satisfactory server, run the ntpdate command followed by one or more server addresses:
-
-							    ~]# ntpdate server_address...
-
-							    For instance:
-
-							    ~]# ntpdate 0.rhel.pool.ntp.org 1.rhel.pool.ntp.org
-
-							    Unless an error message is displayed, the system time should now be set. You can check the current by setting typing date without any additional arguments as shown in Section 2.2.1, “Date and Time Setup”.
-							    In most cases, these steps are sufficient. Only if you really need one or more system services to always use the correct time, enable running the ntpdate at boot time:
-
-							    ~]# chkconfig ntpdate on
-
-							    For more information about system services and their setup, see Chapter 12, Services and Daemons.
-
-							    Note
-							    If the synchronization with the time server at boot time keeps failing, i.e., you find a relevant error message in the /var/log/boot.log system log, try to add the following line to /etc/sysconfig/network:
-
-							    NETWORKWAIT=1
-
-							However, the more convenient way is to set the ntpd daemon to synchronize the time at boot time automatically:
-
-							    Open the NTP configuration file /etc/ntp.conf in a text editor such as vi or nano, or create a new one if it does not already exist:
-
-							    ~]# nano /etc/ntp.conf
-
-							    Now add or edit the list of public NTP servers. If you are using Red Hat Enterprise Linux 6, the file should already contain the following lines, but feel free to change or expand these according to your needs:
-
-							    server 0.rhel.pool.ntp.org iburst
-							    server 1.rhel.pool.ntp.org iburst
-							    server 2.rhel.pool.ntp.org iburst
-							    server 3.rhel.pool.ntp.org iburst
-
-							    The iburst directive at the end of each line is to speed up the initial synchronization. As of Red Hat Enterprise Linux 6.5 it is added by default. If upgrading from a previous minor release, and your /etc/ntp.conf file has been modified, then the upgrade to Red Hat Enterprise Linux 6.5 will create a new file /etc/ntp.conf.rpmnew and will not alter the existing /etc/ntp.conf file.
-							    Once you have the list of servers complete, in the same file, set the proper permissions, giving the unrestricted access to localhost only:
-
-							    restrict default kod nomodify notrap nopeer noquery
-							    restrict -6 default kod nomodify notrap nopeer noquery
-							    restrict 127.0.0.1
-							    restrict -6 ::1
-
-							    Save all changes, exit the editor, and restart the NTP daemon:
-
-							    ~]# service ntpd restart
-
-							    Make sure that ntpd is started at boot time:
-
-							    ~]# chkconfig ntpd on
-
-
-
-
-
-
-
-Checking the Status of NTP
-To check if ntpd is configured to run at system start, issue the following command:
-
-~]$ chkconfig --list ntpd
-ntpd           	0:off	1:off	2:on	3:on	4:on	5:on	6:off
-
-By default, when ntpd is installed, it is configured to start at every system start.
-To check if ntpd is running, issue the following command:
-
-~]$ ntpq -p
-     remote           refid      st t when poll reach   delay   offset  jitter
-==============================================================================
-+clock.util.phx2 .CDMA.           1 u  111  128  377  175.495    3.076   2.250
-*clock02.util.ph .CDMA.           1 u   69  128  377  175.357    7.641   3.671
- ms21.snowflakeh .STEP.          16 u    - 1024    0    0.000    0.000   0.000
- rs11.lvs.iif.hu .STEP.          16 u    - 1024    0    0.000    0.000   0.000
- 2001:470:28:bde .STEP.          16 u    - 1024    0    0.000    0.000   0.000
-
-The command lists connected time servers and displays information indicating when they were last polled and the stability of the replies. The column headings are as follows:
-
-    remote and refid: remote NTP server, and its NTP server
-    st: stratum of server
-    t: type of server (local, unicast, multicast, or broadcast)
-    poll: how frequently to query server (in seconds)
-    when: how long since last poll (in seconds)
-    reach: octal bitmask of success or failure of last 8 queries (left-shifted); 377 = 11111111 = all recent queries were successful; 257 = 10101111 = 4 most recent were successful, 5 and 7 failed
-    delay: network round trip time (in milliseconds)
-    offset: difference between local clock and remote clock (in milliseconds)
-    jitter: difference of successive time values from server (high jitter could be due to an unstable clock or, more likely, poor network performance)
-
-To obtain a brief status report from ntpd, issue the following command:
-
-~]$ ntpstat
-unsynchronised
-  time server re-starting
-   polling server every 64 s
-
-~]$ ntpstat
-synchronised to NTP server (10.5.26.10) at stratum 2
-   time correct to within 52 ms
-   polling server every 1024 s
-
-
-
-
-
 __________________________________________________________________________________________________
 
 BESClient
@@ -2080,11 +1754,6 @@ sudo systemctl status ntpd
 sudo systemctl start ntpd
 
 sudo systemctl enable ntpd
-___________________________________________________________________________________________________
-
-NTPD - RHEL5
-
-sudo /etc/init.d/ntpd status
 
 ___________________________________________________________________________________________________
 
@@ -2148,24 +1817,6 @@ journal -p err
 journalctl --since today
 journalctl --since 9:05:00 --until 9:15;00
 journalctl --since "2014-02-10 20:30:00" --until "2014-02-13 12:00:00"
-____________________________________________________________________________________________
-
-
-												DSMCAD DISABLE/ENABLE
-
-RHEL 7 / RHEL 6
-sudo systemctl stop dsmcad / sudo /etc/init.d/dsmcad stop
-sudo systemctl disable dsmcad / sudo chkconfig dsmcad off
----
-RHEL 7 / RHEL 6
-sudo systemctl start dsmcad_DAY / sudo /etc/init.d/dsmcad_DAY start
-sudo systemctl enable dsmcad_DAY / sudo chkconfig dsmcad_DAY on
-____________________________________________________________________________________________
-
-						LIST ALL SERVICES Running
-
-service --status-all
-
 
 
 
@@ -2332,6 +1983,69 @@ CONSULTAR LUN MAPPER
 cat /proc/scsi/scsi
 ls -ld /sys/block/sd*/device
 
+__________________________________________________________________________________________
+
+
+=== Linux ===
+
+1. Check for current ereg version on VM
+
+    rpm -qa|grep ereg
+
+    Example:  rpm -qa|grep ereg
+        eregldap-1.4-26
+
+2. If version is lower then 1.4-26, then backup protectedid.dat and run upgrade
+
+    sudo cp /opt/eregldap/uar/configure/customvar.cfg /opt/eregldap/uar/configure/customvar.bak_`date +%m%d%y`
+    sudo cp /opt/eregldap/uar/configure/protectedid.dat /opt/eregldap/uar/configure/protectedid.bak_`date +%m%d%y`
+    if [ ! -d /sds ]; then sudo mkdir /sds; fi; sudo cat /proc/mounts | cut -d' ' -f2 | egrep '/sds' >/dev/null 2>&1; if (( $? != 0 )); then sudo mount -o soft,nfsvers=3 146.89.141.138:/sds /sds; fi
+
+    a) INSTALL: sudo rpm -Uvh /sds/local/sceplus/agents/ereg/LINUX/eregldap.1.4-26.noarch.rpm
+
+            Preparing...                ########################################### [100%]
+               1:eregldap               warning: /opt/eregldap/uar/configure/customvar.cfg created as /opt/eregldap/uar/configure/customvar.cfg.rpmnew
+            ########################################### [100%]
+
+    rpm -qa|grep ereg
+    eregldap-1.4-26
+
+    # copy back customvar.bak* and protectedid.bak
+    sudo ls -la /opt/eregldap/uar/configure/
+    sudo cp /opt/eregldap/uar/configure/protectedid.bak_`date +%m%d%y` /opt/eregldap/uar/configure/protectedid.dat
+    sudo cp /opt/eregldap/uar/configure/customvar.bak_`date +%m%d%y` /opt/eregldap/uar/configure/customvar.cfg
+
+    b) CHECK SUCCESSFUL...
+
+        ## CAN ALSO CHECK VERSION AFTER SCRIPT RUNS...
+        i) Run manually...
+            cd /tmp
+            nohup sudo /opt/eregldap/uar/uar-bin/update_sshv4.pl &
+            <wait until script completes>
+
+        ii) Check version in log files...
+            sudo egrep "updatessh.*1.7" /opt/eregldap/uar/log/modify_sshuser`date +%Y%m%d`.LOG
+
+            This command should return:  * Start updatessh $Revision: 1.74 $ *
+
+3. Check for ereg patch for uid/gid range 10000 - 19999
+
+    $ sudo grep range /opt/eregldap/uar/configure/customvar.cfg
+    CUSTxUIDrange = "10000..20000"
+    CUSTxGIDrange = "10000..20000"
+
+4. If range is not found then patch ereg
+
+Patch eregldap for uid/gid range of 10000 - 19999
+
+/sds/local/sceplus/agents/ereg/eregldap_patch_uidRange_default_sceplus.sh
+
+eregldap patch complete.
+
+
+
+
+
 _______________________________________________________________________________________
 
 ADD USER WITH DEFAULT SETTINGS
@@ -2344,12 +2058,38 @@ sudo chage -l <USER>
 sudo chage -M 90 <USER>
 sudo chage -W 7 <USER>
 sudo chage -d 0 <USER>
+sudo chfn -f "name of user" <user>  ----> setting gekos
+
 
 chage -I -1 -m 0 -M 99999 -E -1 username
 
-sudo pam_tally2 --reset --user cinstall
-
 sudo vim /opt/eregldap/uar/configure/protectedid.dat
+
+3. Check for ereg patch for uid/gid range 10000 - 19999
+
+    $ sudo grep range /opt/eregldap/uar/configure/customvar.cfg
+    CUSTxUIDrange = "10000..20000"
+    CUSTxGIDrange = "10000..20000"
+
+______________________________________________________________________________________
+
+								CANNOT SEND EMAIL
+
+
+echo test | mail -vvv -s test brandon.rodriguez@ibm.com
+
+RESOLUTION
+
+groupadd <groupname> -g <range between 10000-20000>
+sudo service postfix reload/stop/start
+or
+
+add group in /opt/eregldap/uar/configure/protectedid.dat
+
+or
+
+/etc/postfix/main.cf
+
 ______________________________________________________________________________________
 
 VIEW PROCESSES INFO
@@ -2507,6 +2247,7 @@ sudo /sds/local/sceplus/sup/Linux/patching/cms_linux_pkg_mgr.sh update
 chkconfig --list NetworkManager
 service NetworkManager stop
 chkconfig NetworkManager off
+chkconfig NetworkManager status
 
 
 #comentar nfs
@@ -2546,29 +2287,11 @@ chkconfig network on
 ./multi_servers.sh | tee <postcheck file name>
 diff -y <file1> <file2>
 
-
+s
 ____________________________________________________________________________________________
 
 
-Hello Team,
 
-Kindly make sure to perform the following task during change activity before reboot the servers.
-
-Please follow below steps before reboot:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Ensure that the Network Manager service is stopped
-# service NetworkManager stop
-or
-/usr/bin/systemctl stop NetworkManager.service
-
-Ensure that the Network Manager service is disabled
-# chkconfig NetworkManager off
-or
-/usr/bin/systemctl disable NetworkManager.service
-
-Backup /etc/resolve.conf and interface files to ~home directory
-
-Note: If the Network Manager is not stopped/disabled before reboot, The NM service will overwrite the /etc/resolve.conf file and the customer domain name will not resolve and the application can't start as expected.
 
 
 RHSA CHANGE
@@ -2595,18 +2318,39 @@ sudo yum -y update --enablerepo=* --disablerepo=gold --advisory="RHSA-2018:2181"
 ANTES DE REBOTEAR:
 
 Ensure that the Network Manager service is stopped
-# service NetworkManager stop
+# service NetworkManager status
 or
-sudo /usr/bin/systemctl start NetworkManager.service
 
 Ensure that the Network Manager service is disabled
 sudo chkconfig NetworkManager off
-sudo systemctl disable NetworkManager.service
+systemctl disable NetworkManager.service
 or
+
+sudo /usr/bin/systemctl enable NetworkManager.service
+sudo /usr/bin/systemctl disable NetworkManager.service
+systemctl is-enabled NetworkManager.service
+sudo /usr/bin/systemctl status NetworkManager.service
+sudo /usr/bin/systemctl start NetworkManager.service
+sudo /usr/bin/systemctl stop NetworkManager.service
+sudo /usr/bin/systemctl disable NetworkManager.service
 sudo /usr/bin/systemctl enable NetworkManager.service
 
 
-sudo /usr/bin/systemctl disable NetworkManager.service
+REDHAT7;
+
+echo _______________;
+hostname;
+systemctl is-enabled NetworkManager.service;
+systemctl status NetworkManager.service;
+
+REDHAT6;
+
+hostname;
+chkconfig --list NetworkManager;
+service NetworkManager status;
+
+
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!NO OLVIDAR MOUNT -A DESPUES DEL REBOOT!!!!!!!!!
@@ -2620,7 +2364,7 @@ sudo /etc/init.d/winbind status
 sudo /etc/init.d/xinetd status
 sudo /etc/init.d/sssd status
 sudo /etc/init.d/rpcbind status
-sudo /etc/init.d/nfsd
+sudo /etc/init.d/nfsd status
 sudo /etc/init.d/nfs status
 sudo /etc/init.d/postfix status
 sudo /etc/init.d/autofs status
@@ -2629,13 +2373,52 @@ sudo /etc/init.d/dsmcad_DAY status
 sudo /etc/init.d/vncserver status
 
 sudo /opt/IBM/ITM/bin/itmcmd agent start all
+sudo /opt/IBM/ITM/bin/itmcmd agent stop all
 sudo /opt/IBM/ITM/bin/cinfo -r
 sudo /opt/IBM/ITM/bin/itmcmd agent start cat-oy sa -O GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent start -oy sa -o GRD
 sudo /opt/IBM/ITM/bin/itmcmd agent -o GRD start sa
 sudo /opt/IBM/ITM/bin/cinfo -r
 
-sudo cat /var/log/yum.log | grep 'Jan 12'
+sudo cat /var/log/yum.log | grep 'Feb 08'
+
+_______________________________________________________________
+
+
+Si no han solucionado el issue del repo lo pueden hacer de la siguiente forma:
+
+>Este error se da porque el cliente tiene configurados sus propios repos y los hace apuntar a una direccion que que no resuelven nuestros repos.
+
+>Como lo dijo Marco Barboza hay que comentar un par de lineas en el siguiente file:
+
+
+sudo vi /etc/yum.conf   >>>>> file a modificar
+
+cachedir=/var/cache/yum/$basearch/$releasever
+keepcache=0
+debuglevel=2
+logfile=/var/log/yum.log
+exactarch=1
+obsoletes=1
+gpgcheck=1
+plugins=1
+installonly_limit=3
+proxy=http://172.16.17.9:8080  >>>> comentar esta linea
+http_caching=packages   >>>>>>>>> comentar esta linea
+
+> Una vez hecho esto puede limpiar el cache del repo
+
+> sudo yum clean all
+
+> Pueden verificar los repos disponible con:
+
+> sudo yum repolist all
+
+> si los repos de redhat no estan habilitados los pueden habilitar para correr los parches de RHSA
+
+> una ve aplicado los parches de RHSA pueden dejar todo a como estaba al principio
+
+> Saludos y espero esto les ayude
 
 ----------------------------------------------------------------
 
@@ -2645,6 +2428,16 @@ sudo package-cleanup --dupes
 sudo package-cleanup --cleandupes
 
 sudo package-cleanup --dupes --removenewestdupes
+
+------------------------------------------------------------------------
+
+ 									INSTALL REPO
+
+sudo mount -t nfs 146.89.141.138:/sds /sds -o nfsvers=3
+sudo yum clean all
+sudo /sds/local/sceplus/sup/Linux/patching/cms_linux_pkg_mgr.sh update
+
+------------------------------------------------------------------------
 
 &&&&&&&&&&&& PARA SACAR INFO DEL EXCEL&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
@@ -3107,42 +2900,6 @@ Check red hat release and version after downgrade:
 
 
 cat /etc/redhat-release ; uname -a
-###########################################################################################
-
-VMWARE Tool Upgrade :
-Check by running below command on VM :
-vmware-toolbox-cmd -v
-section A )  If the version of vmware tools is 8.3.7-x.x follow below steps :
-           rpm -e vmware-open-vm-tools-kmod vmware-open-vm-tools-xorg-drv-display vmware-tools-nox vmware-open-vm-tools-common vmware-open-vm-tools vmware-open-vm-tools-xorg-drv-mouse vmware-open-vm-tools-nox vmware-tools-common vmware-open-vm-tools-xorg-utilities --nodeps
-( Steps to upgrade vmware tools to 10.1.10  ) :
-1)  mount 146.89.141.138:/sds /sds -o nfsvers=3 ( mkdir /sds if not available )
-2 )Check the files present under cd /sds/VMware/ , it should have tar.gz file , copy & untar that file under /tmp
-                 cp /sds/VMware/VMwareTools-10.1.10-6082533.tar.gz /tmp
-                 cd /tmp; gunzip VMwareTools-10.1.10-6082533.tar.gz
-                 tar -xvf  VMwareTools-10.1.10-6082533.tar
-                 cd /tmp/vmware-tools-distrib
-                 ./vmware-install.pl -d
-3 )  Verify Vmware tools are up-to-date
-    vmware-toolbox-cmd upgrade status
-    vmware-toolbox-cmd -v
-    ps -ef |egrep vmtools  ( Check whether vmtools are up & running )
-section B ) Below Steps are required for  Linux VM to load Vmware tools if it finds new Kernel ( Mandatory Steps )
-1) Copy the CMSD-IBM-GPG-KEY   &
-VmWareTool-Postpatch-1.1-1.el5.noarch.rpm  ( for RHEL 5 )
-VmWareTool-Postpatch-1.1.1.el6.noarch.rpm ( For RHEL 6 )
-VmWareTool-Postpatch-1.1.1.el7.noarch.rpm ( For RHEL 7 )
-files under /tmp on to the linux VM
-2) Import  the key :
-        rpm --import CMSD-IBM-GPG-KEY
-   Install the RPM :
-        rpm -ivh VmWareTool-Postpatch-1.1-1.elX.noarch.rpm
-3) Make this service avaialable at boot time :
-       chkconfig vmware-kernel on (RHEL 5 & 6)
-       systemctl enable vmware-kernel (RHEL 7)
-4) Verify Key VmwareTools-Postpatch is installed
-         rpm -qa |egrep "gpg-pubkey-047e93f5-558966df|VmWareTool-Postpatch"
-
-
 
 
 ###########################################################################################
