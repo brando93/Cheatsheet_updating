@@ -347,12 +347,19 @@ lvextend -L <new size> </dev/mapper/<vg-lv> ej:  lvextend -L +1GB /dev/mapper/sa
 If the LV needs to be removed
 lvremove </dev/<vg>/<lv>> ej: lvremove /dev/sapvg/lv4
 
+
+
 7) Create the Filesystem
 mkfs -t <tipo de filesystem> /dev/vgname/lv name
 ej: mkfs -t ext4 /dev/sapvg/lv4
 If the filesystem needs to be re-sized we can use:
 resize2fs <lv>    ej: resize2fs      /dev/sapvg/lv4
 8) After you create the file system, please create the directory that will be used as a mount point.
+
+
+Ensure the filesystem type is EXT when trying the resize2fs command.
+In Red Hat Enterprise Linux 7, the default filesystem type is XFS which uses the xfs_growfs command instead.
+
 
 # resize2fs /mount/device node
 
@@ -959,9 +966,9 @@ To add a swap file:
 1. Determine the size of the new swap file in megabytes and multiply by 1024 to determine the number of blocks.
 For example, the block size of a 64 mb swap file is 65536.
 2. At a shell prompt as root, type the following command with count being equal to the desired block size:
-a. dd if=/dev/zero of=swapfile bs=1024 count=65536
+a. sudo dd if=/dev/zero of=swapfile bs=1024 count=65536
 3. Set up the swap file with the command:
-a. Mkswap /swapfile
+a. sudo mkswap /swapfile
 4. To enable the swap file immediately but not automatically at boot time:
 a. sudo swapon /swapfile
 5. To enable it at boot time, edit /etc/fstab to include the following entry:
@@ -1032,8 +1039,7 @@ systemctl list-unit-files --type=service
 
 -----Verify if service is enabled or disabled at boot time
 
-systemctl is-enabled <sshd.service>
-
+systemctl is-enabled NetworkManager.service;
 
 -----Verify all services failed loaded
 
@@ -1419,13 +1425,15 @@ y ya con eso
 
 
 
+
 ____----------------------------------------------------------------------------------------------------------
+																MCO
 
 !!!!!!!!!!!!!!!!!!!!!VALIDAR VM Y SI ESTA EN READ ONLY = RO!!!!!!!!!!!!!!!!!!!!!
 
 correr script ./multiserver.sh | tee /home/brodriguez/Desktop/logs.txt
 
-echo -------------------
+echo -------------------;
 hostname;
 uptime;
 egrep " ro,|,ro " /proc/mounts
@@ -1440,6 +1448,12 @@ Ejemplo:
 #brodriguez$RHEL: egrep " ro,|,ro " /proc/mounts
 /dev/sda3 / ext4 ro,seclabel,relatime,barrier=1,data=ordered 0 0
 /dev/sda5 /var ext4 ro,seclabel,relatime,barrier=1,data=ordered 0 0
+
+
+QUE HACER EN MCO
+
+los taps que se revisan son el uptime, y que root y ningun filesystems no este en RO = read only o sea que esten en writeable. Si / aparece como RO se debe pedir permiso a rebotear la maquina dado que esta en RO. Los Filesystems de sistema en RO se debe rebootear
+
 ------------------------------------------------------------------------------------------------------
 
 CHECKING FAILURE SSH ATTEMPS
@@ -1526,7 +1540,12 @@ Template of file that works with buradmin - 65_sudoers_msdbuild
 
 
 
-
+[incident, A., Assis Guimaraes, aassis_g@nl.ibm.com,
+VM00007173, ] There are several issues with this server:
+ 1) /var is full 2) hostname should be "vm00007173" and not "vm00007173.
+ solon.prd" 3) sudo is not working as /var is full and thus, RES does
+ not work. Please request support from CMS Global to fix the problem.
+ Regards, Andre Guimaraes
 
 
 
@@ -1680,7 +1699,7 @@ ________________________________________________________________________________
 			ITM AGENT OFFLINE
 
 sudo /opt/IBM/ITM/bin/cinfo -r
-sudo /opt/IBM/ITM/bin/itmcmd agent -f stop ul
+sudo /opt/IBM/ITM/bin/itmcmd agent -f stop lz
 sudo /opt/IBM/ITM/bin/itmcmd agent stop all
 sudo /opt/IBM/ITM/bin/itmcmd agent start all
 sudo service crond status
@@ -2095,6 +2114,8 @@ $ free -m
 $ swapoff -a
 $ swapon -a
 
+for file in /proc/*/status ; do awk '/VmSwap|Name|^Pid/{printf $2 "    " $3}END{ print ""}' $file; done | sort -k 3 -n -r |head -20
+
 Si la memoria esta llena y no permite volcarla:
 
 1. Hablar con el DPE y un mae de apps para que bajen las aplicaciones y liberar memoria.(ultimo recurso)
@@ -2213,8 +2234,6 @@ ________________________________________________________________________________
 
 
 
-Para que dejen de decir que yo no comparto nada jaja...
-
 Cuando reciban eventos (en este caso ABN AMRO) con el siguiente titulo:
 > vm00001681 Script: description: Ereg checking, script result: A0B0D0E0F1, Command: /opt/IBM/ITM4CMS/
 
@@ -2323,9 +2342,28 @@ PING dftex7xfha8fh.cloudfront.net (143.204.15.109) 56(84) bytes of data.
 4 packets transmitted, 4 received, 0% packet loss, time 3000ms
 rtt min/avg/max/mdev = 245.419/246.218/248.531/1.335 ms
 [osadmin@ibmt1porpws02 ~]$ 10.110.1.6
+________________________________________________________________________________
+
+
+CHANGE DNS AND APPLY CHANGES/FLUSH
+
+service dnsmasq restart
+
+sudo chattr +i /etc/resolv.conf = PARA QUE EL NETWORK MANAGER NO BORRE LA CONF
+
+lsattr /etc/resolv.conf = para ver como quedo el file
+
+
+
+
+
+
+
+
 
 
 __________________________________________________________________________________________
+
 
 CONSULTAR LUN MAPPER
 
@@ -2637,6 +2675,10 @@ sudo /opt/IBM/ITM/bin/cinfo -r
 
 sudo cat /var/log/yum.log | grep 'Jan 12'
 
+echo ___________;
+hostname;
+systemctl status NetworkManager.service;
+systemctl is-enabled NetworkManager.service;
 ----------------------------------------------------------------
 
 package-cleanup --cleandupes --removenewestdupes
@@ -3141,28 +3183,5 @@ files under /tmp on to the linux VM
        systemctl enable vmware-kernel (RHEL 7)
 4) Verify Key VmwareTools-Postpatch is installed
          rpm -qa |egrep "gpg-pubkey-047e93f5-558966df|VmWareTool-Postpatch"
-
-
-
-
-###########################################################################################
-
-
-				QUE HACER EN MCO
-
-los taps que se revisan son el uptime, y que root y ningun filesystems no este en RO = read only o sea que esten en writeable. Si / aparece como RO se debe pedir permiso a rebotear la maquina dado que esta en RO. Los Filesystems de sistema en RO se debe rebootear
-
-vmwaretools running
-agentsITM
-
-
-
-
-
-
-
-
-
-
 
 ############################################################################################

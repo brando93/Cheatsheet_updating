@@ -330,7 +330,7 @@ buildah bud: will build a container from a Dockerfile
 buildah from <imagesname> buils a image from another image
 buildah from scratch: allows you to build from 0
 buildah inspect: shows container or image metadata
-buildah commit: used updated contents of a container root FS as a FS layer to commit content 
+buildah commit: used updated contents of a container root FS as a FS layer to commit content
 
 
 
