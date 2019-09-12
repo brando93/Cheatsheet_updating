@@ -1,2 +1,2 @@
 # Updating my Linux/AIX cheatsheets
-cheatsheet for Linux and AIX
+cheatsheet for Linux,AIX,Bash,AWS
