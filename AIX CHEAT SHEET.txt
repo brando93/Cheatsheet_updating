@@ -1,0 +1,901 @@
+AIX
+
+
+Important Conceps:
+
+VIOS: Virtual I/O Server
+IVM: Integrated Virtualization Manager
+HMC: Hardware Management Console = it's a layer between hardware and OS, it's into the Firmware.
+SDMC: System Directoy Management Console
+LPAR: Logical Partition = bunch of physical resources made into one virtual machine called LPAR.
+VIO Client: when the LPAR is all virutal devices
+LUN: Logical Unit Numbers
+VSCSI: Virtual SCSI storage
+SEA: Shared Ethernet Adapter
+IVE: Integrated Virtual Ethernet
+NAS: Network Attached Storage = pretty much bunch of storage connected amoung them and into a network with redundancy. It's Cheaper.
+SAN: Storage Area Network = pretty much bunch of storage connected between them with SAN Switches, redundancy, expensive, mostly for big companies.
+
+
+
+
+$ oslevel -s
+6100-09-06-1543
+version-TL-ServPack-year-week
+$ hostname
+__________________________________________________
+Commands:
+errlog: check logs
+syslog: check logs
+lspath <option>
+errpt <option>
+errpt -a -j BFE4C025
+errpt -d H
+errpt -a -s mmddhhmmyy - equals the current month, day, hour, minute, and year, minus 24 hour
+
+lsdev -Cc adapter and lsdev -Cc if: list system adapter and ip interfaces
+lsdev -PH: list all supported devices
+lsdev -CH "  " configured devices
+lsdev -p: list child devices
+mkdev -l or cfgmgr
+rmdev -dl
+nfsstat: check nfs performance
+lsslot -c: list hot plug slots
+cat parents.ksh: list all parent devices
+lscfg -vpl: physical location
+prtconf displays system config info
+lsattr -El: provides attributes for OS kernel
+getconf -a: provides values of all system config
+chdev -l: changes caracteristics of a device
+mtu maximun transmition unit
+chdev -l rmt0 -a block_size=0 to change block device
+rmdev -l put a device in a defined state
+filesystem info /etc/filesystems
+user/security info /etc/passwd /etc/security/user
+queues and queues devices /etc/qconfig
+ls -li i-node number
+lsfs -cq fs block size
+crfs -v jfs2 -g datavg -a size=1G -m /data crea filesystem
+lsfs
+lsvg -l
+lsps -a: pagin space
+mklv -y my_jfs2_log -t jfs2 datavg 1
+lsps -a: check pagin space
+CHFS:
+chfs -a size=+1G /var : Grow the /var filesystem by 1 Gig
+chfs -a size=1G /var : Grow the /var filesystem to 1 Gig
+chfs -a size=-500M /data2: Decrease fs
+
+################################################################################
+
+NETWORK MONITORING
+
+entstat <interface name> :
+netstat -in: show status of ip interfaces with numeric addresses
+netstat -rn: show status of TCP/IP routes with numeric addresses
+arp -a; display local arp cache
+no -a and no -o: display/set kernel variables values, such as ipforwarding
+nslookup: troubleshoot DNS
+
+#################################################################################
+
+MONITORING PEROFMRNACE TOOLS:
+
+ lparmon, lpar2rrd, Ganglia, and Galileo
+
+
+
+
+PERFORMANCE COMMANDS:
+
+lparstat 1 5: The lparstat command provides a report of LPAR related information and utilization statistics
+mpstat 1 1: The mpstat command collects and displays performance statistics for all logical processors in the system
+procmon: The procmon tool enables you to view and manage the processes running on a system
+sar - 1 5: performance average
+svmon: give memory output
+ps: process
+vmstat 1 5: displays cpu informartion
+iostat:
+lvmstat:
+filemon:
+fileplace:
+###################################################################################
+
+
+RMFS:
+rmfs /mymount (Add -r to remove mount point): Remove mount point entry and the LV for /mymount
+rmfs /data2: remove fs
+lsps -a 	To list out all paging spaces
+smitty tcpip: configure tcp/ip
+
+
+lsps hd6 	To display the details of the paging space hd6
+
+
+chps -a y paging00 	To turn on the paging space paging00 on next reboot
+
+
+chps -a n paging00 	To turn off the paging space paging00 on next reboot
+
+
+chps -s4 paging00 	To increase the size of the paging space in 4 LP blocks
+
+
+mkps -a -n -s4 newvg 	To create a paging space on VG newvg of 4 LP size (-s4) and activate it immediately (-n) and activate it at every restarts
+
+
+rmps paging00 	To remove the paging space paging00
+
+
+swapon -a 	To invoke all entries in /etc/swapspaces file
+
+
+swapon /dev/paging00 	To make available swap space paging00
+
+
+swapoff /dev/paging00 	To disable swap space paging00
+
+df -g: check space in gigabytes
+du -sg to check the number of blocks used by a file or directory
+lspv -l shows on pvs
+
+hdisk0          00f6fd22fadf0e48                    rootvg          active
+hdisk1          00f6fd224a60806f                    datavg          active
+hdisk2          00f6fd221e838eca                    None
+hdisk3          00f6fd221e9f93d7                    datavgtest      active
+hdisk4          00f6fd221e9f9439                    datavgtest      active
+hdisk5          00f6fd221e9f9498                    datavgtest      active
+hdisk6          00f6fd221e9f94fb                    dr_vg           active
+		pvid
+lspv -p shows partition map
+mkvg -y datavg hdisk1 hdisk2
+mkvg -s -y db_2vg hdisk3
+lsvg -o
+lsvg -p/-l total pps and free pps
+chvg -a(activate) n -Q(Quorum) n datavg
+extendvg -f rootvg hdisk2
+
+________________________________________________________________________________
+
+CAMBIAR SETTINGS DE USERS
+
+
+sudo chsec -f /etc/security/lastlog -a unsuccessful_login_count=0 -s <userid>:
+
+cambia la cantidad de unseccesful logins a 0 del user especificado
+*********************************************************************************
+
+reducevg -d <sapvg> <hdisk2> ----> ( -d ) es Deallocates the existing logical volume partitions and then deletes resultant empty logical
+            volumes from the specified physical volumes
+
+
+
+0516-914 rmlv: Warning, all data belonging to logical volume
+        loglv03 on physical volume hdisk2 will be destroyed.
+rmlv: Do you wish to continue? y(es) n(o)? yes
+rmlv: Logical volume loglv03 is removed.
+0516-1734 rmlv: Warning, savebase failed.  Please manually run 'savebase' before rebooting.
+ldeletepv: Volume Group deleted since it contains no physical volumes.
+0516-1734 reducevg: Warning, savebase failed.  Please manually run 'savebase' before rebooting.
+
+*********************************************************************************
+
+varyonvg datavg
+varyoffvg datavg
+importvg -y datavg hdisk3 con un disco es suficiente
+exportvg datavg vg must be inactive before it is exported
+reorgvg rootvg (reorganiza los vg)
+mklv -y datalv -t jfs2 datavg
+lslv <hd8>: shows lv info
+lslv -il
+lslv -m
+mklvcopy -k datalv 3(numero de logical partitions copias) hdisk4
+extendlv datalv 20 (logical partitions)
+
+
+rmlv -f datalv2
+
+rmlv loglv03 ---> loglv03 es un lv creado por el jfs para logear
+Warning, all data contained on logical volume loglv03 will be destroyed.
+rmlv: Do you wish to continue? y(es) n(o)? yes
+rmlv: Logical volume loglv03 is removed.
+0516-1734 rmlv: Warning, savebase failed.  Please manually run 'savebase' before rebooting.
+sudo reducevg hdisk2
+0516-604 reducevg: Physical volume name not entered.
+Usage: reducevg [-d] [-f] VGname PVname...
+Reduces volume group size by removing a physical volume.
+
+
+
+
+mirrorvg -s(quitar el sync mas rapido) rootvg hdisk1
+migratepv -l lv02(lvname) hdisk0(sourcepv) hdisk6(targetpv)
+diag: perform check on the system
+lspath: check paths
+ifconfig -a: check ip:network configuration
+route: display status
+
+
+VNCSERVER
+++++++++++++++++++++++++++++++++++++++++++
+-Instalar VNCServer en un aix:
+rpm -Uvh /sds/aix/aixtoolbox/RPMS/ppc/vnc/vnc-3.3.3r2-6.aix5.1.ppc.rpm
+
+-Se resetea el password:
+vncpasswd
+
+-Los logs se guardan en:
+Starting applications specified in /home/root/.vnc/xstartup
+Log file is /home/root/.vnc/srvdbhml:3.log
+
+
+
+
+Maes para recordarles lo siguiente
+$ ifconfig -a
+en0: flags=1e084863,14c0<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),LARGESEND,CHAIN>
+      inet 172.19.210.28 netmask 0xffffff00 broadcast 172.19.210.255
+en1: flags=1e084863,14c0<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),LARGESEND,CHAIN>
+      inet 172.19.83.28 netmask 0xffffff00 broadcast 172.19.83.255
+en2: flags=1e084863,14c0<UP,BROADCAST,NOTRAILERS,RUNNING,SIMPLEX,MULTICAST,GROUPRT,64BIT,CHECKSUM_OFFLOAD(ACTIVE),LARGESEND,CHAIN>
+      inet 172.23.13.28 netmask 0xffffff00 broadcast 172.23.13.255
+en0= IBR o backup
+en1= Management
+en2= Customer
+
+
+
+
+
+
+
+######################################################################################################
+Les comparto los pasos en caso que ocupen descomprimir .zip en AIX
+****Unzip***
+To decompress .zip
+cd /sds/aix/oss4aix/RPMS/unzip
+rpm -ivh --nodeps unzip-64bit-6.0-6.aix5.1.ppc.rpm
+***Para descomprimir .zip***
+cd <directorio donde esta el .zip>
+unzip <archivo .zip>
+si quieren descomprimir en otro directorio diferente, entonces hacen
+cd <ruta donde quiere descomprimir>
+unzip <ruta completa del archivo a descomprimir>
+
+
+
+
+#######################################################################################################
+HACMP log entry for Resource Group  Down or Error: mark_rg_error_offline called fo
+
+$ sudo /usr/es/sbin/cluster/utilities/clRGinfo -m
+---------------------------------------------------------------------------------------------------------------------
+Group Name     State            Application state            Node
+---------------------------------------------------------------------------------------------------------------------
+Appli_RG1      ONLINE                                        po1naod
+Appli_RG1                      ONLINE NOT MONITORED
+
+
+$ uname -a;uptime
+AIX po1naod 1 6 00C916E24C00
+ 10:30PM   up 25 days,  10:41,  2 users,  load average: 3.12, 2.87, 2.96
+$ sudo lssrc -ls clstrmgrES | grep "Current state"
+Current state: ST_STABLE
+$
+
+
+#######################################################################################################
+
+
+chlv -x <cantidad> <vg> : inrease limit lps
+
+__________________________________________________________________________________________________________________
+LVM
+
+mkvg -y <vgname> <hdiskx>
+mklv -y <name_lv> -t jfs2 <vg_name> <pps>
+crfs -v jfs2 -d <name_lv> -m <mount_point> -A yes
+Mount
+mount /grcmigration
+
+*********************
+* Convertir GB a PPs *
+* GB * 1024= MB      *
+* MB / PPsize= PPs   *
+*********************
+
+E.G.:
+mkvg -y vgpcg1 hdisk10 hdisk11
+mklv -y usr_sap_lv -t jfs2 vgpcg1 256
+crfs -v jfs2 -d usr_sap_lv -m /usr/sap -A yes
+mkdir -p <mount point>
+mount /usr/sap
+#######################################################################################################
+
+Find big files
+
+find /usr -size +5000 -xdev -exec ls -l {} \; | sort -nrk 5 | head -20: allow find heavy files in filesystem *
+
+sudo du -gs /opt | sort -rn | head -5
+
+#######################################################################################################
+
+Find disk size in ODM
+
+getconf DISK_SIZE /dev/hdisk9: extract size -M
+
+for i in `lspv | awk '{print $1}'`; do echo "$i"; sz=`getconf DISK_SIZE /dev/$i`; echo $((sz/1024)); done
+
+
+hdisk0
+64
+hdisk1
+128
+hdisk2
+4
+hdisk3
+4
+hdisk4
+4
+hdisk5
+4
+hdisk6
+4
+
+______________________________________________________________________________________
+
+printf "Device\t\t\tsize (GB)\t\t\tUsed (GB)\t\t\tUUID\t\tPVID\t\t\tVG\n"; for d in $(lspv | grep -v none | awk '{print $1}'); do size=$(sz=`getconf DISK_SIZE /dev/$d`; echo $((sz/1024))); used=$(ud=`lspv $d | grep "USED PPs" | awk '{print $4}' | cut -c 2-`; echo $((ud/1024))); uuid=$(odmget -q "name=$d and attribute=unique_id" CuAt | grep value | awk '{print $3}' | cut -b 11-42); lspv | grep "$d " | awk '{print $2 " " $3}' | read pvid vg; printf '%0s    %16s    %32s     %16s     %16s     %8s\n' $d $size $used $uuid $pvid $vg; done
+
+
+
+Device                  size (GB)                       Used (GB)                       UUID            PVID                    VG
+hdisk0                  64                                  58     600507680180867FF0000000000002F3     00f750cf026846f1       rootvg
+hdisk1                 128                                 127     600507680180867FF0000000000002FB     00f750cf33c1c136     smpappvg
+hdisk2                 128                                 127     600507680180867FF0000000000002FC     00f750cf33c3accb     smplogvg
+hdisk3                 128                                 127     600507680180867FF0000000000002FD     00f750cf33c3410a     smpdatavg
+hdisk4                  64                                  63     600507680180867FF000000000000307     00f750cf33c34178     smpdatavg
+hdisk5                  64                                  63     600507680180867FF000000000000308     00f750cf33c40df9     smparchvg
+hdisk6                  60                                  59     600507680180867FF0000000000006C9     00f750cf54370ccf     smpdatavg
+hdisk7                 100                                  85     600507680180867FF0000000000008E5     00f750cf17baef98     smpdatavg
+hdisk8                  20                                  19     600507680180867FF00000000000099E     00f750cf4476812a     smplogvg
+hdisk9                 200                                 199     600507680180867FF0000000000009BD     00f750cf18512d76     smparchvg
+hdisk10                 100                                  99     600507680180867FF0000000000009BE     00f750cf1856db44     smplogvg
+
+___________________________________________________________________________________________________
+
+
+If you need files larger than 2 gigabytes in size, this is better.
+It should allow files up to 64 gigabytes:
+
+ crfs -v jfs -a bf=true -g'ptmpvg' -a size='884998144' -m'/ptmp2' -A''` |
+  |   locale yesstr | awk -F: '{print $1}'`'' -p'rw' -t''`locale yesstr | aw |
+  |   k -F: '{print $1}'`'' -a nbpi='131072' -a ag='64'
+
+__________________________________________________________________________________________________
+
+
+nfsstat -m shows great info about full set of NFS mount options
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+			INCIDENTS INCIDENTS INCIDENTS INCIDENTS
+			INCIDENTS INCIDENTS INCIDENTS INCIDENTS
+					ONLY
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+
+
+				ITIM AGENT OFFLINE (PS-UL-UX)
+
+sudo /opt/IBM/ITM/bin/itmcmd agent stop <prod>
+
+sudo /opt/IBM/ITM/bin/itmcmd agent start <prodc>
+
+***ITM agents***
+
+***Install BaseOS Agents***
+mount 146.89.141.138:/sds /sds
+mkdir /tmp/ITMBaseOSAgent/
+cp /sds/local/sceplus/agents/ITM/ITM6_AIX_64_06230300_SCE.tar /tmp/ITMBaseOSAgent/
+cd /tmp/ITMBaseOSAgent/
+tar -xvf /tmp/ITMBaseOSAgent/ITM6_AIX_64_06230300_SCE.tar
+cd /tmp/ITMBaseOSAgent/TEMA1/
+./esm_instTEMA.sh -t ux -a aix526 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.55 -c <customer_code> -l <servername>
+eg
+./esm_instTEMA.sh -t ux -a aix526 -h /opt/IBM/ITM -r 146.89.140.53 -f 146.89.140.55 -c ger -l ggaap013
+
+
+sudo /opt/IBM/ITM/bin/uninstall.sh REMOVE EVERYTHING
+
+
+
+/opt/IBM/ITM/bin/cinfo -r            Para verificar si estan corriendo
+/opt/IBM/ITM/bin/itmcmd agent start all   Para iniciar los que no se esten ejecutando
+/opt/IBM/ITM/bin/itmcmd agent stop all
+/opt/IBM/ITM/bin/itmcmd agent -o QEH start sa   Starts sap agent.  Replace QEH with system identifier
+./itmcmd agent -o <instance> stop ud
+qehix100  sa    34210010  root   22:25:16  QEH   ...running
+sudo /opt/IBM/ITCAMUD/bin/cinfo -i            Para revisar los productos que deberian estar corriendo.
+itmcmd agent -p INST1 -f stop um              Para detener un agente forzadamente.
+
+
+ITM agents Legacy MSD
+
+/opt/monitor/IBM/ITM/bin/cinfo -r
+/opt/monitor/IBM/ITM/bin/itmcmd agent start all
+/opt/monitor/IBM/ITM/bin/itmcmd agent -o PRO start sa
+
+/opt/monitor/IBM/ITM/bin/itmcmd agent -o PPDP1BO start rz
+
+cd /opt/monitor/IBM/ITM/bin
+then sudo ./cinfo -i        To see installed ITM agents.
+
+*For further troubleshoot on ITM contact Geovanni de Jesus Rey Hernandez
+
+If alert doesn't go cleared run the following as root.
+cd /tmp
+sudo tar xvf /sds/local/sceplus/agents/ITM/ITM6_AIX_64_06300700_CMS1.tar
+cd TEMA1;
+./esm_instTEMA.sh -t ux -a aix526 -h /opt/IBM/ITM -r 146.89.140.52 -f 146.89.140.53 -c per -l `hostname`
+/opt/IBM/ITM/logs   for ITM logs
+
+
+______________________________________________________________________________________________________
+
+					FILE SYSTEM 80%
+
+bash-4.2$ oslevel
+7.1.0.0
+bash-4.2$ hostname
+intsv066
+
+bash-4.2$ date
+Wed Aug  1 22:18:03 CEST 2018
+bash-4.2$ uptime
+  10:18PM   up 854 days,   5:13,  3 users,  load average: 7.04, 6.33, 5.85
+$ df -g /var
+Filesystem    GB blocks      Free %Used    Iused %Iused Mounted on
+/dev/hd9var        8.00      1.40   83%    10242     3% /var
+$ lspv
+hdisk0          00c27b8fa352791f                    rootvg          active
+hdisk1          00c27b8fc6ac2bbb                    sapvg_local     active
+hdisk2          00c27b8fc7faf425                    sapvg_ep1       active
+hdisk3          00c27b8fc7faf4d2                    sapvg_ep1       active
+hdisk4          00c27b8fc8026a2a                    dbvg_ep1        active
+hdisk5          00c27b8fc8026ae8                    dbvg_ep1        active
+hdisk6          00c27b8fc8026ba1                    dbvg_ep1        active
+hdisk8          00c27b8fd154ff7a                    dbvg_ep1        active
+hdisk9          00c27b8fd0c6d3dd                    sapvg_ep1       active
+hdisk10         00c27b8fe175dc9d                    logvg_ep1       active
+$ lsvg rootvg
+VOLUME GROUP:       rootvg                   VG IDENTIFIER:  00c27b8f00004c0000000153a35279d8
+VG STATE:           active                   PP SIZE:        256 megabyte(s)
+VG PERMISSION:      read/write               TOTAL PPs:      767 (196352 megabytes)
+MAX LVs:            256                      FREE PPs:       464 (118784 megabytes)
+LVs:                13                       USED PPs:       303 (77568 megabytes)
+OPEN LVs:           12                       QUORUM:         2 (Enabled)
+TOTAL PVs:          1                        VG DESCRIPTORS: 2
+STALE PVs:          0                        STALE PPs:      0
+ACTIVE PVs:         1                        AUTO ON:        yes
+MAX PPs per VG:     32512
+MAX PPs per PV:     1016                     MAX PVs:        32
+LTG size (Dynamic): 256 kilobyte(s)          AUTO SYNC:      no
+HOT SPARE:          no                       BB POLICY:      relocatable
+PV RESTRICTION:     none                     INFINITE RETRY: no
+DISK BLOCK SIZE:    512                      CRITICAL VG:    no
+$ chfs -a size=+256M /var
+/etc/locks/fs/hd9var: The file access permissions do not allow the specified action.
+$ sudo chfs -a size=+256M /var
+Filesystem size changed to 17301504
+$ df -g /var
+Filesystem    GB blocks      Free %Used    Iused %Iused Mounted on
+/dev/hd9var        8.25      1.64   81%    10240     3% /var
+$ sudo chfs -a size=+256M /var
+Filesystem size changed to 17825792
+$ bash
+bash-4.2$ df -g /var
+Filesystem    GB blocks      Free %Used    Iused %Iused Mounted on
+/dev/hd9var        8.50      1.90   78%    10241     3% /var
+bash-4.2$
+
+
+______________________________________________________________________________________________________
+
+GET NMON REPORT FROM SERVER
+
+me hago root primero
+sudo su - root
+
+La manera de verificar si el cron ha estado ejecuntado y recopilando informacion:
+
+[osadmin@ehnrcsimuatihs nmon]# sudo su - root
+[root@ehnrcsimuatihs nmon]# crontab -l | grep nmon
+2 0 * * * /bin/sh /usr/local/bin/nmon.sh 1>/dev/null 2>/dev/null
+
+[root@ehnrcsimuatihs nmon]# cat /usr/local/bin/nmon.sh | grep FILE_DIR=
+FILE_DIR="/var/log/nmon"
+
+si quisiera correr el comando y generar un archivo donde estoy ubicado
+
+Pasos para recoletar lo que necesito:
+
+raw = datos extraidos del nmon sin pasarlos a un excel con grafos.
+
+1) /var/log/nmon
+2) chmod 777 folder or filename
+3) scp
+4) send dpe or upload to box
+5) se pasa al nmon_analizer en la maquina de windows ()
+
+
+
+############ Script que guarda performance en  raw data #############################
+
+[ehnrcsimuatdbp:root:/var:] cat /usr/local/bin/nmon.ksh
+#!/bin/ksh
+#
+#
+#
+# Title:       nmon.ksh
+# Owner:       root
+# Permissions: 755
+#
+#
+# Simple script to capture nmon data for use with nmon
+# The script generates a new file each time with the
+# name "server.output.date.nmon" $FILE_DIR
+# Calculations:  ( Using 24 Hours as Example )
+# -s = Seconds ( 300 / 60 = 5 Minutes )
+# -c = Cycles ( [288 * 5] / 60 = 24 Hours )
+#
+################################################################
+# Declare our Variables                                        #
+################################################################
+DATE=`date +%d%m%y`
+DATE1=`date +"%b %d"`
+TIME=`date +%H:%M:%S`
+UNAME=`uname -n`
+FILE_DIR="/var/log/nmon"
+FILE_NAME="$FILE_DIR/$UNAME.output.$DATE.nmon"
+SYSLOG="/var/adm/messages"
+################################################################
+# Select the nmon binary                                       #
+################################################################
+if [ -s /usr/bin/nmon ]
+  then
+    NMONBIN="/usr/bin/nmon"
+elif [ -s /usr/local/bin/nmon_aix53 ]
+  then
+    NMONBIN="/usr/local/bin/nmon_aix53"
+else
+  #Can not find a valid nmon
+  echo "$DATE1 $TIME nmon.ksh can not find a valid NMON binary - Exiting" >> $SYSLOG
+  exit 1
+fi
+
+################################################################
+# Execute the nmon command and save the output                 #
+################################################################
+cd $FILE_DIR
+$NMONBIN -fTNA -s300 -c 288 -F $FILE_NAME
+
+chmod 775 $FILE_DIR/*.nmon*
+
+# Clean up /var/log/nmon
+cd $FILE_DIR
+find $FILE_DIR \( -name "*.nmon" \) -mtime +7 -exec gzip -9 {} \;
+find $FILE_DIR \( -name "*.nmon.gz" \) -mtime +14 -exec rm {} \;
+
+exit 0
+
+
+####################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+______________________________________________________________________________________________________
+
+
+
+				Workload High (94, CPU:-1)
+
+sudo sar 5 5
+
+nmon
+    --->4,t,4
+
+topas
+
+se analiza cual es el proceso que esta consumiendo, si es APPS se pasa el incidente a APPS
+
+______________________________________________________________________________________________________
+
+AIX LPAR was re-booted
+
+errpt -s 0804173118
+errpt -d H
+errpt -a -j BFE4C025
+
+______________________________________________________________________________________________________
+
+
+
+How to install BES client on AIX using smitty
+0 people like this
+
+Like
+|Updated August 5, 2016 by MAURICIO PENA VARGAS|Tags: None Add tags
+Edit
+Page Actions
+
+1. Log into the AIX server using your ID.
+
+
+
+2.Verify if besclient is already installed:
+lslpp -l | grep -i besagent
+or
+ls -ld /var/opt/BESClient
+
+
+
+3. Look for the installer file: BESClient-X.X.X.XX.pkg (where X.X.X.XX is the agent version)
+
+
+
+4. Create the following directory:
+mkdir /home/temlls/bes.client_install
+
+
+
+5. Check if the directory was created:
+ls -ld /home/temlls/bes.client_install
+
+
+
+6. Copy the installation file into the new directory by using the following command:
+cp -p BESClient-X.X.X.XX.pkg /home/temlls/bes.client_install
+
+
+
+7. Go to Now move to that directory: /home/temlls/bes.client_install and verify the file was successfully moved.
+
+
+
+8. Start the installation process:
+smitty install
+
+
+
+9. Select the following option:
+>Install and update software
+>Install software
+
+For the installation directory enter:
+/home/temlls/bes.client_install
+
+Press F4 (Esc 4), it will confirm the file about to install
+
+
+
+10. Confrim the installation: lslpp -l | grep -i besclient
+
+
+
+11. Copy the file "actionsite.afxm"  the TEM A server and move it to:
+/var/opt/BESClient
+
+
+
+12. Edit the config file and make sure that GatherUrl and Relay match with the site.
+
+
+
+13. Start the besclient service.
+etc/rc.d/rc2.d/SBESClientd start
+or
+/etc/init.d/besclient-X.X.X.XX start
+
+
+14. The installation process is now completed.
+Check the TEM console to verify that VM is reporting.
+Check log file /var/opt/BESClient/__BESData/__Global/Logs
+
+________________________________________________________________________________________________
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+			QUE HACER EN MCO
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+De acuerdo a el training que tuvimos el dia de hoy, las casillas que siempre debemos activar desde el script de validacion son las siguientes.
+
+Uptime
+Path check status
+ITM Agent status
+HACMP Status    Esto es para ver si tiene powerha o no y el estado
+GPFS  Status Esto es para ver si tiene GPFS o no y el estado
+
+
+Lo siguiente iria en custom command
+
+ls -la /dev/rhdisk*; lsattr -E -l sys0 |grep -iE clouddev
+
+ls -la /dev/rhdisk*     Este es para identificar Raw disks y ver si esta presente Oracle Rac en un equipo
+lsattr -E -l sys0 |grep -iE clouddev Esto identifica si tiene clouddev activo o no
+
+
+*Para los powerha siempre debemos revisar la version con el siguiente comando.
+
+halevel -s
+Correr el siguiente comando para habilitar el enviromental en caso de no encontrar el comando de version
+export PATH=$PATH:/usr/es/sbin/cluster:/usr/es/sbin/cluster/utilities:/usr/es/sbin/cluster/sbin:/usr/es/sbin/cluster/cspoc
+
+
+
+
+
+
+se corre el script para validar todas las vm afectadas en el site
+bash health_check.sh -P AIX -T CUSTOM -I servers_file
+
+>Custom command #ifconfig -a "recordar si hay alguna interface caida verificar con BHT en este caso seria System P"
+
+>>>En AIX seleccionar los comandos
+
+
+
+
+sudo /sds/local/sceplus/sup/UNIX/bin/aix_snapshot.ksh pre ----> PERMITE CHECKEAR LA VM
+
+halevel -s -----> VERSION DEL GANA SI TIENE POWERHA
+
+Algunas veces piden revisar si son ORACLERAC (sale al inicio del logeo)
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Obtener Información de Oracle RAW
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Documentación:
+https://dbachef.wordpress.com/2015/01/28/adding-new-disk-to-asm-diskgroup-on-aix-7-1/
+https://orasg.wordpress.com/2015/10/04/managing-raw-disks-in-aix-to-use-with-oracle-asm/
+########################################################################
+Ver los procesos de Oracle:
+$ ps -ef | egrep "crsd|ocssd|evmd|oprocd|emagent"
+########################################################################
+Ver los discos RAW:
+$ ls -la /dev/rhdisk*
+########################################################################
+Ver los discos reservados:
+$ lsattr -E -l hdiskN | grep reserve_
+reserve_policy  no_reserve       Reserve Policy             True+
+########################################################################
+Ver el estado del OCR (Oracle Cluster Registry)
+root@rac222 # ocrcheck
+Status of Oracle Cluster Registry is as follows :
+Version : 3
+Total space (kbytes) : 262120
+Used space (kbytes) : 4220
+Available space (kbytes) : 257900
+ID : 133061953
+Device/File Name : +OCR
+Device/File integrity check succeeded
+########################################################################
+Ver el estado de la configuración del del OCR (Oracle Cluster Registry)
+root@rac222 # ocrcheck -config
+Oracle Cluster Registry configuration is :
+Device/File Name : +OCR
+########################################################################
+Verificar el nombre y el estado de los discos en ASM:
+root@rac222 # crsctl query css votedisk
+## STATE File Universal Id File Name Disk group
+— —– —————– ——— ———
+1. ONLINE 995e7ba027194fe0bfa6b09c7187ab17 (/dev/rhdisk14) [VOTE]
+2. ONLINE 60c6827b050c4ff4bf4d1a25cacfa4ef (/dev/rhdisk15) [VOTE]
+3. ONLINE 7ce12429d5a14fe6bfb67046eb1e40fd (/dev/rhdisk16) [VOTE]
+########################################################################
+Verificar el estado del cluster:
+root@rac222 # crsctl check cluster -all
+**************************************************************
+rac222:
+CRS-4537: Cluster Ready Services is online
+CRS-4529: Cluster Synchronization Services is online
+CRS-4533: Event Manager is online
+########################################################################
+Revisar el estado de CRS:
+root@rac222 # crsctl check crs
+CRS-4638: Oracle High Availability Services is online
+CRS-4537: Cluster Ready Services is online
+CRS-4529: Cluster Synchronization Services is online
+CRS-4533: Event Manager is online
+########################################################################
+Verificar el estado de los recursos de CRS:
+$ crs_stat -t
+Name           Type           Target    State     Host
+------------------------------------------------------------
+ora.esxrac.db  application    ONLINE    ONLINE    vm02
+
+_______________________________________________________________________
+
+Los usuarios oficiales y password para las HMC son:
+
+USER:
+aht.x.x.x.x1 (x --> 4 letters site)
+password: start1234
+         admin1234
+         passw0rd
+
+esa es la forma correcta y los passwords
+
+___________________________________________________________________________
+
+si necesitaran pasarle a algun companero de US o India las credenciales de BHT, ingresan a la hmc y hacen la siguiente consulta para ver el usuario de aht
+hscroot@es03hmc011ccpx1:~> cat /etc/passwd | grep aht
+ahtes03:x:1038:1000:Horace_Hanson;IBMUS066575897;IBMUS327096897;I :/home/ahtes03:/bin/hmcbash
+y para resetear el password
+chhmcusr -u ahtes03 -t passwd
+Y les va a pedir el nuevo password.  Favor utilizar alguno de los que acaba de postear Maikel
+
+
+
+
+
+
+
+
+
+
+
+#####################################################################################################
+
+ 			         IMPORTAN CONFIGURATION FILES
+
+######################################################################################################
+
+
+
+/etc/hosts: local hosts table
+/etc/rc.* : scripts for tcp/ip, nfs, and so forth
+/etc/resolv.conf: name resolver
+/etc/netsvc.conf: name resolution order
+/usr/sample/tcpip/named.* : sample files that can be copied and edited
+/etc/named.* : DNS resolution files
+/etc/hosts.equiv: remote user access files
+/etc/rhosts:remote user access files
+/etc/hosts.lpd :remote user access files
+/var/adm/ras/errlog: check system logs
+/var/adm/ras: log files
+/sbin/rc.boot: boot scripts
+/etc/inittab: boot scripts

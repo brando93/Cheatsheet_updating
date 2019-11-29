@@ -1,0 +1,464 @@
+AWS Notes
+
+Cloud Computing:
+
+Agile
+Quick to change
+Reduce risks
+Scability: hability to use services/resources as needed
+Quick vm provisioning
+Global Reach
+Slasticity: the hability to quickly provision resources or even shut them down based on demand
+Reliability: hability to recover from disruptions or  failures
+Availability Zones: full tolerance when a system can remain when others failed just like redundancy
+
+
+WAYS TO USE AWS:
+
+AWS Management Console: navigation, usability, convenient mobile app
+CLI: programming language, flexibility
+Software Developtment Kits (SDKs): ability to use aws in existing applications
+EC2 = Elastic Compute Cloud
+--------------------------------------
+
+General Concepts - Acrons:
+AWS Snowball: Used to securely transfer large amounts of data in and out of AWS (Petabyte Scale)
+AWS Glaciers: A very low cost, long term, durable storage solution.
+EFS: Elastic File System
+EBS: Elastic Block Store
+AMI: Amazon Machines Images (AWS, Partner, Community, Private)
+EIP: Elastic IP
+EC2: Elastic  Cloud Instance
+SQS: Amazon Simple Queue Service
+ECS: Elastic Container Service
+ECR: Elastic Container Registry -- allows you to host and store your docker images.
+EKS: Elastic Container Service for Kubernetes
+AWS Elastic Beanstalk: Allows to upload the code of web application and automatically provision and deploy requiered resources within AWS.
+AWS Lambda: Is a server less computer service allows you to run your application code without having to manager EC2 instances
+AWS Batch: is used to manage and run batch computing workloads within AWS
+AWS Lightsail: virtual private servers backed by AWS infrastructure. It's as EC2 but without many configurable steps throughout its creation
+RDS: Relational Database Service
+VPC: Virtual Private Connection
+WAF: Web Application Firewall
+AWS Fargate: enables ECS to run containers without having to manage provision instances and cluster for containers
+ELB: Elastic Load Balancer: help to manage control the flow of inbound requests destined to a group of targets
+VTL: Virtual Tape Library
+ACM: AWS Certificate Manager
+AWS Regions: Geographic areas. By choosing correct region it will improve latency while minimizing cost.
+Availability Zones: Collection of data centers in a specific region.
+Edge Locations/Cloud Front: Is used to provide fastness to clients as infrastructure are located in nearest availability zones.
+SNS: Notification Service
+Cloud9: Cloud9 as a terminal and CLI. AWS Cloud9 is an Integrated Development Environment (IDE) that runs in a browser. You can write, run, and debug your code in Cloud9
+Amazon Multi-AZ Deployments: Amazon RDS Multi-AZ deployments provide enhanced availability and durability for Database (DB) Instances, making them a natural fit for production database workloads
+E Ink Shipping label: Amazon's Snowball is a secure storage appliance that can be used to send up to 50 TB of data directly to Amazon to upload to AWS servers. The Snowball has an E Ink shipping label that automatically sets itself to ship to the customer and, after the data is loaded, ship back to Amazon Web Services.
+Cloud Formation: Provision and manages stacks of aws resources based on templates that you create to model your infrastructure
+--------------------------------------
+
+The 5 Pillars of the AWS Well-Architected Framework
+
+-Operational Excellence:
+
+The operational excellence pillar includes the ability to run and monitor systems to deliver
+business value and to continually improve supporting processes and procedures
+
+  Perform operations as code
+  Annotate documentation
+  Make frequent, small, reversible changes
+  Refine operations procedures frequently
+  Anticipate failure
+  Learn from all operational failures
+
+-Security:
+
+The security pillar includes the ability to protect information, systems, and assets while delivering business value through risk assessments and mitigation strategies
+
+    Implement a strong identity foundation
+    Enable traceability
+    Apply security at all layers
+    Automate security best practices
+    Protect data in transit and at rest
+    Prepare for security events
+
+
+-Reliability:
+
+The reliability pillar includes the ability of a system to recover from infrastructure or service disruptions, dynamically acquire computing resources to meet demand, and mitigate disruptions such as misconfigurations or transient network issues
+
+    Test recovery procedures
+    Automatically recover from failure
+    Scale horizontally to increase aggregate system availability
+    Stop guessing capacity
+    Manage change in automation
+
+-Performance Efficiency:
+
+The performance efficiency pillar includes the ability to use computing resources efficiently to meet system requirements and to maintain that efficiency as demand changes and technologies evolve
+
+    Democratize advanced technologies
+    Go global in minutes
+    Use server less architectures
+    Experiment more often
+    Mechanical sympathy
+
+-Cost Optimization:
+
+The cost optimization pillar includes the ability to avoid or eliminate unneeded cost or suboptimal resources
+
+    Adopt a consumption model
+    Measure overall efficiency
+    Stop spending money on data center operations
+    Analyze and attribute expenditure
+    Use managed services to reduce cost of ownership
+
+--------------------------------------
+
+- Pricing and Support
+
+On AWS you pay for what your use or consume:
+
+  -You pay as you go
+  -Pay less when you reserve
+  -Pay even less per unit by using more
+
+When reserving instances there are 3 options:
+  All Upfront (AURI)
+  Partial Upfront (PURI)
+  No-Upfront Payments (NURI)
+
+Note: When you buy reserve instances the larger payment you make upfront
+the greater discount you get.
+
+- AWS Costs Fundamentals:
+
+  Pay for:
+    Compute capacity
+    Storage
+    Outbound data transfer (aggregated)
+  No charge for:
+    Inbound data transfer
+
+  Purchase Types:
+
+    *On-demand instances:
+      Compute capacity by the hour and second
+      Minimum of 60 seconds
+    *Reserved instances:
+      Low or no up-front payment instances Reserved
+      Discount on hourly charge for that instances
+    *Spot instances:
+      Bid for unused Amazon EC2 capacity
+
+Monitoring:
+
+  Use amazon cloudwatch to monitor Instances
+  Basic monitoring
+  Detailed monitoring
+  Detailed monitoring (fixed rate, prorated months)
+
+Auto Scaling:
+
+  Automatically adjust numbers of intances
+  No additional charge
+
+Elastic IP Addresses:
+
+  No charge when associated with a running instance
+
+- AWS TrustedAdvisor
+
+AWS Trusted Advisor is an online tool that provides real-time advice to help you provision resources according to AWS best practices.
+Whether you are implementing new workflows, developing applications or making constant improvements, you can take advantage of the recommendations provided by Trusted Advisor on a regular basis so that your solutions are optimally provisioned.
+
+---------------------------------------------------------------------------------
+
+CORE SERVICES:
+
+-EC2:
+
+Elastic vm
+Pay as you go: pay for what you USE
+Global Hosting
+
+-EBS Volume:
+
+Storage Devices (HDD/SSD)
+Snapshots (You can encrypt your snapshots for free)
+Resize storage volumes on the fly
+If you'd like to add a new volume first verify ec2 region so you can add a storage volume in the same region
+
+
+-S3 / Simple Storage Service
+
+Storage capacity
+Elasticity
+High Availability
+
+You can copy data remotely like this:
+$aws s3 cp <file> s3://<bucketname path>
+
+You can copy/sync content from directory and copied it to a bucketname
+$aws s3 sync <folder> s3://<bucketname path>
+
+- Spot Instances
+
+Una instancia de spot es una instancia EC2 sin utilizar que está disponible por un precio inferior al precio bajo demanda. Dado que las Instancias de spot permiten solicitar instancias EC2 no utilizadas con grandes descuentos, es posible reducir considerablemente los costos de Amazon EC2. El precio por hora de una instancia de spot se denomina precio de spot. Amazon EC2 establece el precio de spot de cada tipo de instancia en cada zona de disponibilidad, y este fluctúa en función de la oferta y la demanda a largo plazo de las Instancias de spot. Su instancia de spot se ejecuta siempre que haya capacidad disponible y que el precio máximo por hora de su solicitud sea superior al precio de spot.
+
+-VPC:
+
+Allows you to create a virtual private network within AWS cloud.
+
+Customers can:
+
+Define IP addresses, subnets
+Isolate subnets
+Defining ACL
+Customizing routing rules
+
+-Server Certificates CA = Certificate Authority (SSL - Secure Sockets Layer /
+TLS - Transport Layer Security)
+
+-Security Groups
+
+Acts as a built-in firewall
+Control accessibility to instances
+Method to filter traffic through instances
+Its used for security compliance
+
+-ALB - Application Load Balancer
+
+Path Host-based routing
+Native IPv6 Support
+AWS WAF
+Dynamic Ports
+Deletion Protection & Request Tracking
+
+-Network Load Balancers
+
+Operates in Layer 7 of  OSI model
+
+-Classic Load Balancer
+
+ Supports TCP, SSL/TLS, HTTP, HTTPS
+
+-EC2 Auto Scaling
+
+Allows you to elastically increase or decrease resources on your EC2 based on demand.
+
+- Create Launch Configuration and Launch Templates
+Allows you to have a current configuration for future deployments similar as kick-start
+
+- Store Fundamentals
+
+******Simple Storage Service S3
+
+Highly available
+Highly durable
+Low cost
+Unlimited storage capacity
+*Bucket
+*Objects are store in S3 buckets
+
+- Amazon Route 53
+
+Amazon Route 53 is a scalable and high availability web DNS (domain number system) service in the cloud.
+It is designed to provide you with a reliable and cost-effective method and to redirect end users to applications in Internet mediation,
+the translation of readable numbers for people like www.example.com in terms of numerical IPs like 192.0.2.1
+that I use of teams for victims among them
+
+******Amazon Glacier
+
+A very low cost, long term, durable storage solution suited for long term backup and archival requirements
+It does not provide instant access to your data
+Lower cost than S3
+  Expedited
+  Standard
+  Bulk
+
+
+******Elastic Block Store - EBS
+
+Provides block level storage to EC2 Instances
+Operates as a separate service to EC2
+EBS volumes act as network attached storage devices
+
+
+******Amazon Elastic File System
+
+Allows you to create shared file systems
+EFS file system is only compatible with NFS
+EFS does NOT support the windows OS
+Your Linux instance must have the NFS client installed to mount the target
+Limitless capacity
+
+******CloudFront
+
+Web service for content delivery
+Integration with other AWS services
+  Low latency
+  High data transfer speeds
+  No minimum commitments
+
+Example of use cases for AWS CloudFront:
+  Static asset caching
+  Security and Encryption
+  Live on-demand videos streaming
+
+
+Distributes data requested through web traffic closer to the end user via edge locations
+As the data is cached, durability of the data is not possible
+Methods of data distributions: web distribution and RTMP Distribution
+
+
+******AWS Storage Gateway
+
+The software appliance can be downloaded from AWS as a virtual machine
+Allow you to securely store your files as objects within S3
+Ability to mount or map drives to an S3 Bucket as if it was a share held locally
+
+      --Cached Volume Gateways
+        Primary data storage is provided by Amazon S3
+        Local data storage is used for buffering and a local cache for recently accessed data
+      --Virtual Tape Library (present as iSCSI devices)
+        VTL is a Cloud based tape backup solution, replacing physical components with virtual ones, while utilizing your existing tape backup application infrastructure
+
+
+******AWS Snow Ball
+
+Based on how much data you need to send, SNOWBALL is the solution
+
+Used to securely transfer large amounts of data in and out of AWS (Petabyte Scale)
+Built for high speed data transfer
+Use physical appliance
+All AWS Snowball Appliance is encrypted
+
+---AMAZON RDS
+
+The ability to scale components
+Automatic Backups and patching
+High Availability
+Automatic Failure Detecting and recovery
+- Databases on AWS
+
+**Relational Databases:
+AWS RDS : Relational Database Service
+  Aurora: MySQL , PostgreSQL
+  Commercial: Oracle , SQL Server
+  Community: MySQL, PostgreSQL, MariaDB
+AWS Redshift: Data Warehouse
+**Non-relational Databases
+AWS Dynamo DB: Flexible schema, designed for high availability, fast performance, infinitely scalable with little effort
+Data is only eventually consistent, no flexible query language, limited data types.
+Limitations: 400 kb maximun items size, 10 indexes per table, performance limited to provisioned throughput level.
+AWS Neptune: Graph
+
+
+-Cloud Trail
+
+Is used to logged and monitor and captures the information of an event.
+
+  **Cases
+    able to track changes to your AWS infrastructure
+
+-Cloud Watch
+
+Provides monitoring on your resources via a series of metrics which are individual to each service
+Allows you to quickly react to event and dynamically adjust any availability or Scability
+
+-Bastion HOST
+
+Is it such as jump host which will allow you to connect to specific EC2 instances
+
+-Direct Connect
+
+AWS Direct Connect is a cloud service solution that facilitates the establishment of an exclusive network connection between the local
+environment and AWS. With AWS Direct Connect, you can establish private connectivity between AWS and your data center,
+office or co-location environment, which in many cases can reduce network costs, increase bandwidth performance and provide a more
+network experience stable Internet connections
+
+-VPC
+
+-Transit Gateway
+
+
+-AWS ElastiCache: In-memory data store, redis, Memcached,
+
+-Amazon Kinesis Firehose
+Delivers real-time streaming data to different services within AWS
+Fully managed by AWS
+Receives data from your data producer and delivers to your destination
+
+-Amazon Kinesis Streams
+Collects and processes huge amounts of data in real-time
+Data can come from a variety of different sources
+Amazon streams has the ability to implement SSE encryption directly from the producers
+
+- Amazon Inspector
+
+Automated security assessment service that helps you improve security and compliance of applications deployed in AWS
+
+*Assessments applications for:
+  Vulnerabilities
+  Deviations from best practices
+
+*Produces a detailed report with:
+  Security findings
+  Prioritized steps for remediation
+
+  -AWS CodeCommit
+  Is a managed source control service.
+  CodeCommit allows you to host secure and scalable private Git repositories
+
+  -IAM
+  IAM groups contain IAM Users and have IAM policies associated
+
+    IAM Roles: Allows you to adopt a set of temporary IAM permissions
+
+
+  -Identity Federation
+  Allows you to access and manage AWS resources even if you don't  have a user account within IAM.
+
+
+  -NAT & Bastion Hosts
+
+  NAT: Network Address Translation,  allows your private instances to have outgoing connectivity to the internet, while at the same time blokcing inbound traffic from the internet
+  Bastion Hosts: It sits within your public subnet accessed via a secure connection
+  Acts as a jump server, allowing you to connect to private instances from the internet
+
+Amazon Inspector enables you to:
+
+Quickly and easily access your AWS resources
+Offload security assessments so you can focus on more complex security issues
+Gain a deeper understanding of your AWS resources
+
+
+- AWS Shield
+Built in protection against DDoS attacks
+Access tools, services and expertise to help you protect your AWS applications
+AWS Shield is a managed Distributed Denial of Service (DDoS) protection service that safeguards applications running on AWS
+DoS - Denial of Service: A deliberated attempts to make your website or application unavailable to users
+
+
+-Key Management Service:
+
+The KMS service is for encryption at rest (To encryp data while in transit you would need to use a different method, such as SSL)
+SSE-KMS is the name of the keys this service uses.
+
+
+Symmetric Cryptography:
+  Single key is used to encrypt and decrypt the data.
+Asymmetric Cryptography:
+  Two separated keys. One for encrypt and other to decrypt the data.
+
+
+- High Availability Features
+
+Regions
+Availability zones
+Virtual private cloud
+Elastic load balancer
+Simple queue service
+Elastic cloud compute
+Elastic ip address
+Rute53
+Cloudwatch
+Autoscaling

@@ -1,0 +1,18 @@
+Important Configuration Files:
+
+/etc/ansible/ansible.conf
+/etc/ansible/hosts
+---------------------------------------------------------------------
+Ad-Hoc: comandos planos especificando su modulo
+
+- Using Command Module:
+ansible  all -m command -a id
+
+- Using File Module:
+ansible -m file -a 'touch /home/ansible/hello' all
+
+- Using Shell Module:
+ansible -m shell -a ''
+
+- Using Copy Module:
+ansible all -k -m copy -a 'content="Testing Ansible \n" dest=/etc/hosts'
